@@ -5,10 +5,9 @@
 # repository and the workflow file `publish.yml`.
 #
 # Notes:
-#   * npm CLI 11.5.1+ and Node 22.14+ are required, so the publish job uses
-#     Node 24.
-#   * Provenance is generated automatically by trusted publishing; the
-#     `--provenance` flag is not needed.
+#   * npm CLI 11.5.1+ and Node 22.14+ are required. The npm bundled with the
+#     runner is too old for scoped-package OIDC, so the publish job upgrades it.
+#   * `--provenance` is passed explicitly: it also forces the OIDC auth path.
 #   * Publish by creating a GitHub Release (tag it `v1.1.1`, matching
 #     `version` in package.json), or run this workflow manually.
 
@@ -77,6 +76,11 @@ jobs:
           node-version: "24" # npm >= 11.5.1 for OIDC
           registry-url: "https://registry.npmjs.org"
 
+      # The npm bundled with the runner cannot do the OIDC token exchange for
+      # scoped packages; upgrade before publishing.
+      - run: npm install -g npm@latest
+      - run: npm --version
+
       - name: Verify the version matches the release tag
         if: github.event_name == 'release'
         env:
@@ -91,5 +95,6 @@ jobs:
           echo "version $version matches tag $tag"
 
       # No token: the npm CLI authenticates with the OIDC token automatically.
-      # `access: public` comes from publishConfig in package.json.
-      - run: npm publish
+      # `--provenance` makes the OIDC path explicit; `access: public` comes from
+      # publishConfig in package.json.
+      - run: npm publish --provenance --access public
