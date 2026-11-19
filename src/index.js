@@ -46,4 +46,4 @@ import * as types from "./types.js";
 export { codec, conditions, nodes, tools, types };
 
 /** The library version. */
-export const VERSION = "1.1.0";
+export const VERSION = "1.1.1";

@@ -1,11 +1,16 @@
-# Build, test, publish to npm, and attach nothing fancy.
+# Lint, test, and publish to npm.
 #
-# Publishing uses an npm automation token stored as the `NPM_TOKEN` repository
-# secret, and publishes with provenance so the release links back to this
-# workflow.
+# Publishing uses npm **trusted publishing** (OIDC): no long-lived token is
+# stored. The npm trusted publisher for `@dnd-ed/jsshenanigans` must name this
+# repository and the workflow file `publish.yml`.
 #
-# Then publish by creating a GitHub Release (tag it `v1.0.0`, matching
-# `version` in package.json).
+# Notes:
+#   * npm CLI 11.5.1+ and Node 22.14+ are required, so the publish job uses
+#     Node 24.
+#   * Provenance is generated automatically by trusted publishing; the
+#     `--provenance` flag is not needed.
+#   * Publish by creating a GitHub Release (tag it `v1.1.1`, matching
+#     `version` in package.json), or run this workflow manually.
 
 name: publish
 
@@ -63,13 +68,13 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      id-token: write
+      id-token: write # required for trusted publishing (OIDC)
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
         with:
-          node-version: "22"
+          node-version: "24" # npm >= 11.5.1 for OIDC
           registry-url: "https://registry.npmjs.org"
 
       - name: Verify the version matches the release tag
@@ -85,6 +90,6 @@ jobs:
           fi
           echo "version $version matches tag $tag"
 
-      - run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      # No token: the npm CLI authenticates with the OIDC token automatically.
+      # `access: public` comes from publishConfig in package.json.
+      - run: npm publish

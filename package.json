@@ -1,6 +1,6 @@
 {
   "name": "@dnd-ed/jsshenanigans",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "A JavaScript library for creating, loading and modifying Jujutsu Shenanigans movesets.",
   "keywords": [
     "jujutsu",
@@ -93,6 +93,9 @@
   },
   "optionalDependencies": {
     "fzstd": "^0.1.1"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "repository": {
     "type": "git",
