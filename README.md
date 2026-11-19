@@ -75,6 +75,18 @@ server get full autocomplete for every builder.
 - [ ] Fake rigs
   - [ ] Fake rig animations
 
+## Docs and editor
+
+- Docs: <https://dnd-ed.github.io/jsshenanigans/docs>
+- Moveset editor: <https://dnd-ed.github.io/jsshenanigans/editor>
+
+Both live in [`docs/`](./docs) — a Next.js + [Fumadocs](https://fumadocs.dev) site
+that is statically exported and deployed to GitHub Pages by
+[`.github/workflows/docs.yml`](./.github/workflows/docs.yml).
+
+The editor doubles as a test: running jss in a browser needs a zstd backend, so
+the site registers a WebAssembly one with `register_backend`.
+
 ## Requirements
 
 Node.js **22.15+** (it ships `zstd` in `node:zlib`). No required runtime
