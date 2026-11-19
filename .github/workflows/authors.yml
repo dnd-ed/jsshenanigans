@@ -1,0 +1,52 @@
+# Adds every git contributor to `contributors` in package.json, if they are not
+# already there.
+#
+# Identities are read through `git log`'s %aN/%aE, which respect `.mailmap`, so
+# one person committing under several names/emails is credited only once.
+#
+# To opt an identity out, add it to `.github/authors-ignore.txt`. That is the
+# supported way to remove someone: because the list is derived from git history,
+# deleting an entry from package.json is undone on the next push.
+#
+# If it changes package.json this commits and pushes back via the workflow.
+
+name: authors
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: authors-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  add-authors:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Full history so every contributor is visible, not just this push.
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - run: node .github/scripts/add-authors.js
+
+      - name: Commit and push if contributors changed
+        run: |
+          if git diff --quiet -- package.json; then
+            echo "no new contributors to add"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "chore: add contributors to package.json [skip ci]" -- package.json
+          git push
