@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+
+# Coverage / test reports
+coverage/
+.nyc_output/
+*.lcov
+
+# Logs
+*.log
+npm-debug.log*
+
+# Build output
+dist/
+build/
+*.tgz
+
+# Caches
+.eslintcache
+
+# Virtual environments / editors
+.venv/
+.idea/
+.vscode/
+*.swp

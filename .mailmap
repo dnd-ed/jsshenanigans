@@ -1,0 +1,13 @@
+# Git mailmap: normalises contributor identities.
+#
+# This repository is derived from dnd-ed/pythonshenanigans. Contributors there
+# commit under two identities with different addresses; both are mapped to the
+# canonical identity below.
+#
+# `git log --format=%aN/%aE` (and therefore .github/scripts/add_authors.js)
+# respects this file.
+#
+# Format: Proper Name <proper@email> Commit Name <commit@email>
+
+akinari (aki) <pts@itzdanti.dev> itzdanti <contact@itzdanti.dev>
+akinari (aki) <pts@itzdanti.dev> akinari (aki) <contact@itzdanti.dev>

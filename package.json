@@ -1,0 +1,52 @@
+{
+  "name": "jsshenanigans",
+  "version": "1.0.0",
+  "description": "A JavaScript library for creating, loading and modifying Jujutsu Shenanigans movesets.",
+  "keywords": [
+    "jujutsu",
+    "shenanigans",
+    "jjs",
+    "moveset",
+    "roblox"
+  ],
+  "license": "MIT",
+  "author": "akinari (aki) <pts@itzdanti.dev>",
+  "type": "module",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./nodes": "./src/nodes.js",
+    "./conditions": "./src/conditions.js",
+    "./codec": "./src/codec.js",
+    "./types": "./src/types.js",
+    "./tools": "./src/tools.js",
+    "./defaults": "./src/defaults.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src",
+    "README.md",
+    "LICENSE",
+    "NOTICE.md"
+  ],
+  "engines": {
+    "node": ">=22.15.0"
+  },
+  "scripts": {
+    "test": "node --test",
+    "test:coverage": "node --test --experimental-test-coverage",
+    "lint": "eslint .",
+    "demo": "node demo/demo.js"
+  },
+  "devDependencies": {
+    "eslint": "^9.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dnd-ed/jsshenanigans.git"
+  },
+  "homepage": "https://github.com/dnd-ed/jsshenanigans",
+  "bugs": {
+    "url": "https://github.com/dnd-ed/jsshenanigans/issues"
+  }
+}
