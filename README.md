@@ -77,8 +77,8 @@ server get full autocomplete for every builder.
 
 ## Docs and editor
 
-- Docs: <https://dnd-ed.github.io/jsshenanigans/docs>
-- Moveset editor: <https://dnd-ed.github.io/jsshenanigans/editor>
+- Docs: <https://jss.itzdanti.dev/docs>
+- Moveset editor: <https://jss.itzdanti.dev/editor>
 
 Both live in [`docs/`](./docs) — a Next.js + [Fumadocs](https://fumadocs.dev) site
 that is statically exported and deployed to GitHub Pages by

@@ -2,10 +2,10 @@ import { createMDX } from 'fumadocs-mdx/next';
 
 const withMDX = createMDX();
 
-// GitHub Pages serves project sites from /<repo>/, so the base path is
-// configurable and defaults to that. Set NEXT_PUBLIC_BASE_PATH="" for a
-// custom domain.
-const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? '/jsshenanigans';
+// The site is served from the custom domain jss.itzdanti.dev, so there is no
+// base path. Set NEXT_PUBLIC_BASE_PATH (e.g. to "/jsshenanigans") to host it
+// under a project path instead.
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
 
 /** @type {import('next').NextConfig} */
 const config = {

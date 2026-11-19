@@ -4,8 +4,11 @@
 # -> Source to "GitHub Actions".
 #
 # The site is a static export (`output: 'export'`), so there is nothing to run
-# on a server. `NEXT_PUBLIC_BASE_PATH` defaults to `/jsshenanigans`; set it to
-# an empty string (or a custom domain path) if you host it elsewhere.
+# on a server. It is served from the custom domain jss.itzdanti.dev, which
+# `docs/public/CNAME` declares; point a DNS CNAME record at dnd-ed.github.io.
+#
+# Set NEXT_PUBLIC_BASE_PATH to a sub-path (e.g. /jsshenanigans) if you host the
+# site under the project URL instead of the custom domain.
 
 name: docs
 
@@ -51,7 +54,8 @@ jobs:
         run: npm run build
         working-directory: docs
         env:
-          NEXT_PUBLIC_BASE_PATH: /jsshenanigans
+          NEXT_PUBLIC_BASE_PATH: ""
+          NEXT_PUBLIC_SITE_URL: https://jss.itzdanti.dev
 
       - uses: actions/configure-pages@v5
 

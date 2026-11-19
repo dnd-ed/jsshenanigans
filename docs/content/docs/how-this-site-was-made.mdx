@@ -62,21 +62,25 @@ path that includes the Pages base path.
 
 ## GitHub Pages details
 
-- The repo is served from `/<repo>/`, so `next.config.mjs` sets `basePath` and
-  `assetPrefix` from `NEXT_PUBLIC_BASE_PATH` (defaulting to `/jsshenanigans`).
-  Set it to an empty string for a custom domain.
+The site is served from the custom domain **jss.itzdanti.dev**, so it has no base
+path:
+
+- `docs/public/CNAME` holds the domain, and a DNS `CNAME` record for `jss` points
+  at `dnd-ed.github.io`.
+- Pages is set to deploy from GitHub Actions; the workflow uploads `docs/out`
+  with `actions/upload-pages-artifact` and publishes it with
+  `actions/deploy-pages`.
+- `NEXT_PUBLIC_BASE_PATH` still exists, so the same site can be hosted under a
+  project path (`/jsshenanigans`) if the custom domain ever goes away.
 - `trailingSlash: true` and `images: { unoptimized: true }` keep the export
-  Pages-friendly.
-- A `public/.nojekyll` file stops Pages from ignoring the `_next` directory.
-- The deploy workflow installs, builds, and uploads `docs/out` with
-  `actions/upload-pages-artifact` and `actions/deploy-pages`.
+  Pages-friendly, and `public/.nojekyll` stops Pages from ignoring `_next`.
 
 ## Running it locally
 
 ```bash
 cd docs
 npm install
-npm run dev      # http://localhost:3000/jsshenanigans
+npm run dev      # http://localhost:3000
 ```
 
 `npm run build` writes the static site to `docs/out`, and `npm start` serves it.
