@@ -1,0 +1,121 @@
+---
+title: Character
+description: Build a moveset from scratch, or load one from a character code.
+---
+
+`Character` is the main object. It holds the list of skills and knows how to
+turn it into a character code.
+
+```js
+import * as jss from '@dnd-ed/jsshenanigans';
+
+const character = new jss.Character();
+```
+
+## Constructor
+
+```js
+new jss.Character({ hide_character_extras, raw });
+```
+
+| Option | Default | Description |
+| --- | --- | --- |
+| `hide_character_extras` | `false` | Prepend a hidden skill that hides the character's body. This also hides accessories like hair. Ignored when `raw` is given. |
+| `raw` | `null` | An existing payload to wrap, e.g. the result of `codec.decode`. Entries are kept exactly as they are. |
+
+The `raw` payload is validated: it must be an array of objects, otherwise
+`InvalidCharacterCodeError` is thrown.
+
+## Loading
+
+```js
+const fromCode = jss.Character.from_code(code);
+const fromJson = jss.Character.from_raw(rawJson);
+```
+
+| Method | Description |
+| --- | --- |
+| `Character.from_code(code)` | Decode a character code and wrap its payload. |
+| `Character.from_raw(json)` | Parse a raw JSON string and wrap its payload. |
+
+Both keep fields the library does not model (`TOOL TIP`, awakening `COLOR`,
+editor `PREVIEW` metadata, unknown nodes, ...), so a decode -> edit -> encode
+round trip does not lose anything.
+
+## `character.create.skill()`
+
+This is how skills are added. The node list can be the second argument, or an
+`options.line` field.
+
+```js
+character.create.skill('Punch', [nodes.HITBOX({ damage: 5 })], {
+  cooldown: 5,
+  tooltip: 'A quick jab.',
+});
+```
+
+| Option | Default | Description |
+| --- | --- | --- |
+| `line` | `[]` | The skill's nodes. |
+| `kind` | `"SKILL"` | One of `SKILL`, `SPECIAL`, `MELEE`, `CHASE`, `AWAKENING`. |
+| `cooldown` | `0` | Cooldown in seconds (`SKILL`, `SPECIAL`, `CHASE`). |
+| `key` | auto | The skill's `KEY`. Left alone, the next free key is used. |
+| `add` | `false` | Mirrors the game's `ADD` field. |
+| `duration` | `null` | `AWAKENING` only: duration in seconds. |
+| `delay` | `null` | `AWAKENING` only: mirrors the game's `DELAY`. |
+| `properties` | `null` | Use `Properties({ ... })`. |
+| `conditions` | `null` | Use `conditions.*`. |
+| `branches` | `null` | Use `Branch(nodes, conditions)`. |
+| `tooltip` | `null` | Written as `TOOL TIP`. |
+| `color` | `null` | `AWAKENING` only: a start/end pair such as `"1,1,1 5,5,5"`. |
+| `extra` | `null` | Extra top-level fields, merged in verbatim. |
+
+An unknown `kind` throws a `RangeError`.
+
+<Callout title="Defaults are stripped">
+  Node, condition and property values equal to their defaults are removed before
+  the skill is stored, so the output stays close to what the in-game editor
+  writes. See [Nodes](/docs/nodes).
+</Callout>
+
+## Adding a raw skill
+
+```js
+character.create_raw_skill({ NAME: 'x', K_NAME: 'SPECIAL', DATA: '{}' });
+```
+
+The entry must be an object; anything else throws `InvalidCharacterCodeError`.
+Its contents are not validated, so it must already be in the game's shape.
+
+## Exporting
+
+| Method | Returns |
+| --- | --- |
+| `export_raw()` | The payload as a compact JSON string. |
+| `export_character_code()` | A JJS character code. |
+| `to_code()` | Alias for `export_character_code()`. |
+
+```js
+const code = character.export_character_code();
+```
+
+## Introspection
+
+| Member | Description |
+| --- | --- |
+| `length` | How many entries the payload holds. |
+| `[Symbol.iterator]` | Iterate the raw skill objects (`for (const skill of character)`). |
+| `skills` | A list of `{ kind, name }` for every entry. |
+| `raw` | The underlying array of skill objects. |
+
+```js
+for (const skill of character) {
+  console.log(skill.K_NAME, skill.NAME);
+}
+```
+
+## Internal helpers
+
+`_used_keys()` returns the set of `KEY`s used by `SKILL` entries, and
+`_next_key()` returns the first free one. They are used by `create.skill()` and
+are exported only for tooling.

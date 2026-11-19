@@ -1,0 +1,14 @@
+{
+  "title": "API reference",
+  "pages": [
+    "index",
+    "character",
+    "codec",
+    "nodes",
+    "conditions",
+    "tools",
+    "utilities",
+    "errors",
+    "types"
+  ]
+}

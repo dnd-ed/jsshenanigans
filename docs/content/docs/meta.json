@@ -1,4 +1,11 @@
 {
   "title": "jsshenanigans",
-  "pages": ["index", "getting-started", "nodes", "editor", "how-this-site-was-made"]
+  "pages": [
+    "index",
+    "getting-started",
+    "nodes",
+    "editor",
+    "how-this-site-was-made",
+    "api"
+  ]
 }

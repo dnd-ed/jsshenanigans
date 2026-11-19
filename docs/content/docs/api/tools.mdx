@@ -1,0 +1,71 @@
+---
+title: Tools
+description: Inspect a character code you did not build.
+---
+
+These helpers exist because the fastest way to learn what the live game supports
+is to decode a code it produced and read the fields straight off it.
+
+```js
+import * as jss from '@dnd-ed/jsshenanigans';
+```
+
+## `dumps`
+
+```js
+jss.dumps(code, { indent: 2, expand_data: true });
+```
+
+Returns the full payload as pretty-printed JSON.
+
+| Option | Default | Description |
+| --- | --- | --- |
+| `indent` | `2` | JSON indentation. |
+| `expand_data` | `true` | Parse the nested `DATA` strings so the whole node graph is visible instead of one escaped blob. |
+
+With `expand_data`, each skill's `DATA` becomes an object, recursively, so a
+node graph is readable in one pass.
+
+## `describe`
+
+```js
+jss.describe(code);
+```
+
+Returns a compact structural summary:
+
+```ts
+{
+  skill_count: number,
+  skills: Array<{
+    kind: string | null,
+    name: string | null,
+    fields: string[],           // every top-level key, sorted
+    nodes?: string[],           // K_NAME of each node in DATA.Line
+    conditions?: string[],      // K_NAME of each condition in DATA.Req
+    branches?: string[],        // branch names in DATA.Branch
+    raw?: unknown               // only for entries that are not objects
+  }>
+}
+```
+
+Example:
+
+```js
+const info = jss.describe(code);
+// {
+//   skill_count: 5,
+//   skills: [
+//     { kind: 'SKILL', name: 'Punch', fields: [...], nodes: ['HITBOX', 'WAIT'], conditions: [] },
+//     ...
+//   ]
+// }
+```
+
+`describe` tolerates malformed entries: a non-object entry is reported with
+`kind: null`, `name: null` and its `raw` value, instead of throwing.
+
+<Callout title="Round-tripping">
+  Both helpers only read. To edit a code, load it with
+  [`Character.from_code`](/docs/api/character) and export it again.
+</Callout>

@@ -1,0 +1,55 @@
+---
+title: Types
+description: The animation table and the name unions.
+---
+
+```js
+import { Animations } from '@dnd-ed/jsshenanigans';
+import type { SkillName, BodyPartName } from '@dnd-ed/jsshenanigans/types';
+```
+
+## `Animations`
+
+A nested, frozen table of `[character, animation]` pairs, grouped by character.
+The values are what `ANIMATION({ animation })` expects.
+
+```js
+jss.Animations.HonoredOne.HollowPurple;  // [1, 1]
+jss.Animations.Vessel.DivergentFist1;    // [2, 4]
+jss.Animations.Emotes.Sasage;            // [24, 1]
+
+nodes.ANIMATION({ animation: jss.Animations.Vessel.DivergentFist1 });
+```
+
+Groups include `HonoredOne`, `Vessel`, `RestlessGambler`, `TenShadows`,
+`Mahoraga`, `Perfection`, `BloodManipulation`, `Switcher`, `Locust`,
+`DefenseAttorney`, `StarRage`, `Heian`, `CursedPartners`, `AspiringMangaka`,
+`PuppetMaster`, `HeadOfTheHei`, `Salaryman`, `MonkeyKid`, `LuckyCoward`,
+`CrowCharmer`, `DisasterPlants`, `TrueCannon`, `BlackDeath` and `Emotes`.
+
+## Name tables
+
+Each of these is a frozen array at runtime and a string union in TypeScript:
+
+| Export | Type | Used by |
+| --- | --- | --- |
+| `Skills` | `SkillName` | `SKILL({ move })` |
+| `Specials` | `SpecialName` | `SPECIAL({ spec })` |
+| `Effects` | `EffectName` | `VISUAL({ effect })` |
+| `AttackType` | `AttackTypeName` | `HITBOX`, `PROJECTILE` |
+| `States` | `StateName` | `STATE({ state })` |
+| `EasingStyles` | `EasingStyleName` | `VISUAL({ easing_style })` |
+| `EasingDirections` | `EasingDirectionName` | `VISUAL({ easing_direction })` |
+| `BodyParts` | `BodyPartName` | `VISUAL`, `GRAB`, `PARTICLE` |
+
+```js
+import { BodyParts, Skills } from '@dnd-ed/jsshenanigans/types';
+
+BodyParts.includes('Head');   // true
+Skills.slice(0, 3);           // ['Cancel', 'Lapse Blue', 'Reversal Red']
+```
+
+<Callout title="They are data, not validation">
+  The builders accept any string; the tables are there for autocomplete and for
+  picking a valid name. Nothing is validated at runtime.
+</Callout>

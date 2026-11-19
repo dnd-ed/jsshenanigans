@@ -1,0 +1,61 @@
+---
+title: Errors
+description: The error hierarchy, and what throws what.
+---
+
+Everything the library throws derives from `JsshenanigansError`, so one `catch`
+covers the whole pipeline.
+
+```js
+import {
+  JsshenanigansError,
+  InvalidCharacterCodeError,
+  BackendNotFoundError,
+} from '@dnd-ed/jsshenanigans';
+```
+
+## Hierarchy
+
+```
+JsshenanigansError
+├── InvalidCharacterCodeError
+└── BackendNotFoundError
+```
+
+| Class | Thrown when |
+| --- | --- |
+| `InvalidCharacterCodeError` | A string is not a usable character code, a payload is malformed, or a skill entry is not an object. |
+| `BackendNotFoundError` | No zstd backend could be loaded, or the active backend cannot compress. |
+
+## Catching
+
+```js
+try {
+  const character = jss.Character.from_code(maybeCode);
+} catch (error) {
+  if (error instanceof jss.InvalidCharacterCodeError) {
+    // the code was bad
+  } else {
+    throw error;
+  }
+}
+```
+
+## What throws what
+
+| Call | Failure | Error |
+| --- | --- | --- |
+| `decode` / `decompress` | not a string, empty, bad base64, not zstd, corrupt, not JSON | `InvalidCharacterCodeError` |
+| `Character.from_code` | the decoded payload is not an array of objects | `InvalidCharacterCodeError` |
+| `Character.from_raw` | invalid JSON, or not an array of objects | `InvalidCharacterCodeError` |
+| `create_raw_skill` | the argument is not an object | `InvalidCharacterCodeError` |
+| `register_backend` | missing `name` or `decompress` | `TypeError` |
+| `create.skill` | unknown `kind` | `RangeError` |
+| `compress` | no backend can compress | `BackendNotFoundError` |
+| any codec call | no backend at all | `BackendNotFoundError` |
+
+<Callout type="warn" title="Unvalidated inner fields">
+  Loading only checks that the payload is an array of objects. The contents of
+  each skill are preserved verbatim, even if they are wrong, so a code can be
+  exported that the game will reject.
+</Callout>

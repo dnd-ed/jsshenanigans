@@ -1,0 +1,110 @@
+---
+title: Codec
+description: Turn JSON into a character code and back, and choose the zstd backend.
+---
+
+A character code is `base64(zstd(json))`. The codec is the only part of the
+library that needs a compression backend, and it is the part that makes the
+library usable in a browser.
+
+```js
+import * as jss from '@dnd-ed/jsshenanigans';
+```
+
+## Functions
+
+| Function | Takes | Returns |
+| --- | --- | --- |
+| `compress(rawJson)` | a JSON string | a character code |
+| `decompress(code)` | a character code | a JSON string |
+| `encode(payload)` | any JSON-serialisable value | a character code |
+| `decode(code)` | a character code | the parsed value |
+| `backend_name()` | — | the name of the active backend |
+| `register_backend(backend)` | a backend object | nothing |
+
+`encode`/`decode` are the convenient pair: they handle `JSON.stringify` and
+`JSON.parse` for you. `compress`/`decompress` work on strings directly.
+
+```js
+const code = jss.encode([{ NAME: 'x', K_NAME: 'SPECIAL', DATA: '{}' }]);
+const payload = jss.decode(code);
+```
+
+## Backends
+
+A backend is an object with a name, a decompressor, and optionally a
+compressor:
+
+```ts
+type Backend = {
+  name: string;
+  compress?: (bytes: Uint8Array) => Uint8Array;
+  decompress: (bytes: Uint8Array) => Uint8Array;
+};
+```
+
+`register_backend()` puts it at the front of the queue and clears the cached
+choice, so it takes effect immediately. A malformed backend throws a
+`TypeError`.
+
+Built-in backends, in order:
+
+| Backend | Available | Compress | Decompress |
+| --- | --- | --- | --- |
+| `node:zlib` | Node 22.15+ | yes | yes |
+| `fzstd` | optional dependency | no | yes |
+
+### Choosing a backend
+
+Set `JSSHENANIGANS_ZSTD_BACKEND` (exported as `ENV_BACKEND`) to a backend name
+to prefer it; the others stay as fallbacks.
+
+```sh
+JSSHENANIGANS_ZSTD_BACKEND=fzstd node my-script.js
+```
+
+If nothing can be loaded, the codec throws `BackendNotFoundError` with the
+reason each backend failed.
+
+### In the browser
+
+Browsers have no `node:zlib` and no `fzstd`, so register a WebAssembly one
+before decoding. This site does exactly that:
+
+```js
+import * as jss from '@dnd-ed/jsshenanigans';
+import * as zstd from '@bokuweb/zstd-wasm';
+
+await zstd.init('/zstd.wasm');
+jss.register_backend({
+  name: 'zstd-wasm',
+  compress: (bytes) => zstd.compress(bytes),
+  decompress: (bytes) => zstd.decompress(bytes),
+});
+```
+
+<Callout type="warn" title="No compression means no export">
+  A decompress-only backend can read codes but `compress()` will throw
+  `BackendNotFoundError`. Register something that can compress to export.
+</Callout>
+
+## Validation
+
+Decoding is strict, and every failure is an `InvalidCharacterCodeError`:
+
+- non-string input;
+- an empty string;
+- invalid base64;
+- a payload that is not a zstd frame;
+- a zstd frame that fails to decompress;
+- valid zstd that does not contain JSON.
+
+Codes pasted with whitespace or a label in front are tolerated: whitespace is
+removed and decoding resyncs on the zstd magic (`KLUv`).
+
+## Constants
+
+| Export | Value |
+| --- | --- |
+| `ZSTD_MAGIC` | `Uint8Array` of `28 b5 2f fd`, the start of every zstd frame |
+| `ENV_BACKEND` | `"JSSHENANIGANS_ZSTD_BACKEND"` |

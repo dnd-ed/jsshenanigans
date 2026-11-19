@@ -1,0 +1,889 @@
+---
+title: Node builders
+description: Every `nodes.*` builder, its options, and the node key each option writes.
+---
+
+Every `nodes.*` builder, its options, and the node key each option writes.
+
+```js
+import * as nodes from '@dnd-ed/jsshenanigans/nodes';
+```
+
+## WAIT
+
+```js
+nodes.WAIT({ ... });
+```
+
+| Option | Node key | Default | Description |
+| --- | --- | --- | --- |
+| `TIME` | — | `1` | How many seconds to delay the next NODE by. |
+
+<Callout title="Default output">
+
+```json
+{
+  "K_NAME": "WAIT",
+  "TIME": 1
+}
+```
+
+</Callout>
+
+## SKILL
+
+```js
+nodes.SKILL({ ... });
+```
+
+| Option | Node key | Default | Description |
+| --- | --- | --- | --- |
+| `move` | `MOVE` | `"Divergent Fist"` | The skill to run. [no in-game documentation] |
+| `speed` | `SPEED` | `1` | Multiplier of the Skill's speed. |
+| `cancel_last` | `CANCEL LAST` | `false` | Cancels the previous NODE if set to true. |
+| `enable_variants` | `ENABLE VARIANTS` | `true` | Enable variants instead of only using the base variant. [no in-game documentation] |
+| `hold_for` | `HOLD FOR` | `0` | How many seconds to hold the skill for. Only applicable to holdable skills, such as Max Elephant. |
+| `start` | `START` | `0` | Where to begin the Skill from, starting from 0 seconds. |
+
+<Callout title="Default output">
+
+```json
+{
+  "K_NAME": "SKILL",
+  "MOVE": "Divergent Fist",
+  "SPEED": 1,
+  "START": 0,
+  "HOLD FOR": 0,
+  "ENABLE VARIANTS": true,
+  "CANCEL LAST": false
+}
+```
+
+</Callout>
+
+## SPECIAL
+
+```js
+nodes.SPECIAL({ ... });
+```
+
+| Option | Node key | Default | Description |
+| --- | --- | --- | --- |
+| `spec` | `SPEC` | `"Limitless"` | The special skill to run. [no in-game documentation] |
+| `speed` | `SPEED` | `1` | Multiplier of the Skill's speed. |
+| `cancel_last` | `CANCEL LAST` | `false` | Cancels the previous NODE if set to true. |
+| `enable_variants` | `ENABLE VARIANTS` | `true` | Enable variants instead of only using the base variant. [no in-game documentation] |
+
+<Callout title="Default output">
+
+```json
+{
+  "K_NAME": "SPECIAL",
+  "SPEC": "Limitless",
+  "SPEED": 1,
+  "ENABLE VARIANTS": true,
+  "CANCEL LAST": false
+}
+```
+
+</Callout>
+
+## ANIMATION
+
+```js
+nodes.ANIMATION({ ... });
+```
+
+| Option | Node key | Default | Description |
+| --- | --- | --- | --- |
+| `animation` | `ANIM_USE` | `null` | The animation to play, use types.Animations for definitions. [no in-game documentation] |
+| `start` | — | `0` | The start time of the animation. [no in-game documentation] |
+| `end` | — | `10` | The end time of the animation. [no in-game documentation] |
+| `looped` | `LOOPED` | `false` | Loop the animation as long as the skill is active. |
+| `speed` | `SPEED` | `1` | Multiplier of the Animation's speed. |
+| `fade_in` | `FADE IN` | `0.1` | How fast the Animation should fade in, in seconds. |
+| `fade_out` | `FADE OUT` | `0` | How fast the Animation should fade out, in seconds. |
+| `last_hit` | `LAST HIT` | `-1` | Activates this NODE on a target hit in the last (value) seconds. |
+
+<Callout title="Default output">
+
+```json
+{
+  "K_NAME": "ANIM",
+  "ANIM_USE": [
+    1,
+    1
+  ],
+  "PREVIEW": [
+    0,
+    10
+  ],
+  "SPEED": 1,
+  "FADE IN": 0.1,
+  "FADE OUT": 0,
+  "LAST HIT": -1,
+  "LOOPED": false
+}
+```
+
+</Callout>
+
+## SOUND
+
+```js
+nodes.SOUND({ ... });
+```
+
+| Option | Node key | Default | Description |
+| --- | --- | --- | --- |
+| `id` | `ID` | `12222253` | The sound's AssetID. |
+| `speed` | `SPEED` | `1` | Multiplier of the Sound's playback speed. |
+| `volume` | `VOLUME` | `0.5` | Multiplier of the Sound's volume. |
+| `start` | `START` | `0` | Where to begin the Sound from, starting at 0 seconds. |
+| `end` | `END` | `500` | Where to end the Sound at, in seconds. |
+| `fade_in` | `FADE IN` | `0` | How fast the Animation should fade in, in seconds. [no in-game documentation] |
+| `fade_out` | `FADE OUT` | `0` | How fast the Animation should fade out, in seconds. [no in-game documentation] |
+| `cancel` | `CANCEL` | `false` | Cancels all currently playing Sound NODEs. |
+| `global_` | `GLOBAL` | `false` | Disables 3D falloff, playing the sound at the same volume for everyone. |
+| `projectile_tag` | `PROJECTILE TAG` | `"nil"` | The name of a projectile's tag. If matched with an existing projectile, the sound follows the projectile. |
+
+<Callout title="Default output">
+
+```json
+{
+  "K_NAME": "SFX",
+  "ID": 12222253,
+  "START": 0,
+  "END": 500,
+  "SPEED": 1,
+  "VOLUME": 0.5,
+  "FADE IN": 0,
+  "FADE OUT": 0,
+  "GLOBAL": false,
+  "PROJECTILE TAG": "nil",
+  "CANCEL": false
+}
+```
+
+</Callout>
+
+## VELOCITY
+
+```js
+nodes.VELOCITY({ ... });
+```
+
+| Option | Node key | Default | Description |
+| --- | --- | --- | --- |
+| `force` | — | `null` | The direction where force should be applied towards. Higher values = bigger force (X, Y, Z) |
+| `time` | `TIME` | `0` | How long the force should be active for. |
+| `fade` | `FADE` | `false` | The force linearly fades to 0,0,0 over time, |
+| `track` | `TRACK` | `false` | Force direction tracks the torso's orientation during the entire duration of the NODE. |
+| `last_hit` | `LAST HIT` | `-1` | Activates this NODE on a target hit in the last (value) seconds. |
+| `ragdoll` | `RAGDOLL` | `0` | If the value is above 0, ragdolls for (value) seconds. |
+| `true_ragdoll` | `TRUE RAGDOLL` | `false` | Disables ragdoll cancel. |
+| `relative_from_branch` | `RELATIVE FROM BRANCH` | `false` | Force direction is relative to the Branch origin. |
+
+<Callout title="Default output">
+
+```json
+{
+  "K_NAME": "VELO",
+  "FORCE": "0, 0, 0",
+  "TIME": 0,
+  "FADE": false,
+  "TRACK": false,
+  "LAST HIT": -1,
+  "RAGDOLL": 0,
+  "TRUE RAGDOLL": false,
+  "RELATIVE FROM BRANCH": false
+}
+```
+
+</Callout>
+
+## CONNECT
+
+```js
+nodes.CONNECT({ ... });
+```
+
+| Option | Node key | Default | Description |
+| --- | --- | --- | --- |
+| `signal` | `SIGNAL` | `"Nothing"` | The block's signal. |
+| `time` | `TIME` | `0.1` | How long the signal should be active for, in seconds. |
+| `range` | `RANGE` | `"inf"` | Activation range for the signal, in studs. |
+
+<Callout title="Default output">
+
+```json
+{
+  "K_NAME": "CONNECT",
+  "SIGNAL": "Nothing",
+  "TIME": 0.1,
+  "RANGE": "inf"
+}
+```
+
+</Callout>
+
+## HITBOX
+
+```js
+nodes.HITBOX({ ... });
+```
+
+| Option | Node key | Default | Description |
+| --- | --- | --- | --- |
+| `position` | — | `null` | The hitbox's position, the origin being the player's center. (X, Y, Z) |
+| `rotation` | — | `null` | The hitbox's rotation, relative to the player's orientation. (X, Y, Z) |
+| `size` | — | `null` | The size of the hitbox. (X, Y, Z) |
+| `stun` | `STUN` | `1` | How long the stun on hit should last for, in seconds. |
+| `stun_anim` | `STUN ANIM` | `false` | Plays a generic stun animation on the hit target. |
+| `ignore_wakeup` | `IGNORE WAKEUP` | `false` | Ignore the wakeup stun immunity (disable for accurate M1s). |
+| `damage` | `DAMAGE` | `1` | How much damage should be dealt on hit. |
+| `debree` | `DEBREE` | `0` | If not 0, causes destruction. The value determines the Debree Fidelity, which is 2 by default. Negative values don't spawn debree. |
+| `attack_type` | `ATTACK TYPE` | `"Melee"` | The hitbox's attack type. [no in-game documentation] |
+| `blockable` | `BLOCKABLE` | `true` | The hitbox is blockable from the front. |
+| `blockable_360` | `360 BLOCK` | `false` | The hitbox is blockable regardless of orientation. |
+| `cancel_enemy` | `CANCEL ENEMY` | `true` | Cancels the hit target(s). |
+| `clear_knockback` | `CLEAR KNOCKBACK` | `false` | Clears hit target(s) velocity, also cancelling their ragdoll. |
+| `can_kill` | `CAN KILL` | `true` | The hitbox can kill the hit target(s). If disabled, the target(s) cannot receive more damage than their current health. |
+| `hit_ragdoll` | `HIT RAGDOLL` | `false` | The hitbox can hit ragdolls. |
+| `hit_user` | `HIT USER` | `false` | The hitbox can hit the user of the skill. |
+| `single_target` | `SINGLE TARGET` | `true` | The hitbox can only kill one target. |
+| `branch` | `BRANCH` | `"nil"` | Proceed to a BRANCH on hit. |
+| `branch_target` | `BRANCH TARGET` | `"nil"` | Force the hit target(s) to proceed to a BRANCH. |
+| `branch_finisher` | `BRANCH FINISHER` | `"nil"` | Proceed to a BRANCH if the hit was fatal. |
+| `projectile_tag` | `PROJECTILE TAG` | `"nil"` | The name of a projectile's tag. If matched with an existing projectile, the hitbox's origin is set to the projectile's position. |
+| `link_user` | `LINK USER` | `false` | Another player hitting this hitbox transfers the hit to the user instead. Typed loosely: the game accepted a number here, so it is not clearly a plain toggle. |
+| `preview` | — | `null` | Editor-only timeline range, `[start, end]`. Not used at runtime. |
+
+<Callout title="Default output">
+
+```json
+{
+  "K_NAME": "HITBOX",
+  "POSITION": "0, 0, 4",
+  "ROTATION": "0, 0, 0",
+  "SIZE": "6, 6, 6",
+  "STUN": 1,
+  "STUN ANIM": false,
+  "DAMAGE": 1,
+  "DEBREE": 0,
+  "ATTACK TYPE": "Melee",
+  "BLOCKABLE": true,
+  "360 BLOCK": false,
+  "CANCEL ENEMY": true,
+  "CLEAR KNOCKBACK": false,
+  "CAN KILL": true,
+  "HIT RAGDOLL": false,
+  "HIT USER": false,
+  "SINGLE TARGET": true,
+  "BRANCH": "nil",
+  "BRANCH TARGET": "nil",
+  "BRANCH FINISHER": "nil",
+  "PROJECTILE TAG": "nil",
+  "IGNORE WAKEUP": false,
+  "LINK USER": false
+}
+```
+
+</Callout>
+
+## BRANCH
+
+```js
+nodes.BRANCH({ ... });
+```
+
+| Option | Node key | Default | Description |
+| --- | --- | --- | --- |
+| `branch` | `BRANCH` | `"nil"` | The BRANCH the user shall proceed to. |
+| `random` | `RANDOM` | `""` | Randomly selects a BRANCH to proceed to any time this NODE is activated. Branch names are seperated by commas. |
+| `last_hit` | `LAST HIT` | `-1` | Activates this NODE on a target hit in the last (value) seconds. |
+
+<Callout title="Default output">
+
+```json
+{
+  "K_NAME": "BRANCH",
+  "BRANCH": "nil",
+  "RANDOM": "",
+  "LAST HIT": -1
+}
+```
+
+</Callout>
+
+## VISUAL
+
+```js
+nodes.VISUAL({ ... });
+```
+
+| Option | Node key | Default | Description |
+| --- | --- | --- | --- |
+| `effect` | `EFFECT` | `"Slash"` | The effect to play. [no in-game documentation] |
+| `amount` | `AMOUNT` | `1` | How many Effects to emit. If the selected Effect is "Mesh", the value of this property becomes the Mesh ID. |
+| `texture` | `TEXTURE` | `0` | The effect's texture. Determined by an AssetID. |
+| `color` | `COLOR` | `"255, 255, 255"` | The effect's color. (R, G, B) |
+| `alt_color` | `ALT COLOR` | `"255, 255, 255"` | The color to fade into over the course of the Effect's duration. |
+| `opacity` | `OPACITY` | `0` | The effect's transparency, with 0 being fully opaque and 1 being completely invisible. |
+| `alt_opacity` | `ALT OPACITY` | `0` | The transparency to fade into. |
+| `position` | — | `null` | The effect's offset from the selected Limb. (X, Y, Z) |
+| `alt_position` | `ALT POSITION` | `null` | The offset to fade into. |
+| `rotation` | — | `null` | The effect's rotation. (X, Y, Z) |
+| `alt_rotation` | `ALT ROTATION` | `null` | The rotation to fade into. |
+| `size` | `SIZE` | `1` | Multiplier of the effect's size. |
+| `alt_size` | `ALT SIZE` | `1` | The size to fade into. |
+| `time` | `TIME` | `1` | How long the Effect should be active for. Alt (Property) use Time as the speed. |
+| `last_hit` | `LAST HIT` | `-1` | Activates this NODE on a target hit in the last (value) seconds. |
+| `limb` | `BODY PART` | `"HumanoidRootPart"` | The body part to play the effect on or use as the effect's center. [no in-game documentation] |
+| `visual_tag` | `VISUAL TAG` | `"nil"` | The name of the tag. Used by other VISUAL nodes to Cancel the effect, if the selected Effect is "Cancel" |
+| `projectile_tag` | `PROJECTILE TAG` | `"nil"` | The name of a projectile's tag. If matched with an existing projectile, the effect's origin (i.e. "Limb") is set to the projectile's position. |
+| `run_on_server` | `RUN ON SERVER` | `false` | Runs the effect serverside, recommended for weapons and such. |
+| `cancel_on_interrupt` | `CANCEL ON INTERRUPT` | `false` | Cancels the effect when the skill is interrupted. Requires VISUAL TAG. |
+| `relative_from_branch` | `RELATIVE FROM BRANCH` | `false` | Body part is selected from the Branch origin. |
+| `can_collide` | `CAN COLLIDE` | `false` | Enables collision on the effect, making it tangible. |
+| `easing_style` | `EASING STYLE` | `"Linear"` | The easing style of the effect. [no in-game documentation] |
+| `easing_direction` | `EASING DIRECTION` | `"In"` | The easing direction of the effect. [no in-game documentation] |
+
+<Callout title="Default output">
+
+```json
+{
+  "K_NAME": "VISUAL",
+  "EFFECT": "Slash",
+  "TIME": 1,
+  "POSITION": "0, 0, 0",
+  "ROTATION": "0, 0, 0",
+  "SIZE": 1,
+  "COLOR": "255, 255, 255",
+  "OPACITY": 0,
+  "ALT POSITION": "0, 0, 0",
+  "ALT ROTATION": "0, 0, 0",
+  "ALT SIZE": 1,
+  "ALT COLOR": "255, 255, 255",
+  "ALT OPACITY": 0,
+  "TEXTURE": 0,
+  "BODY PART": "HumanoidRootPart",
+  "EASING STYLE": "Linear",
+  "EASING DIRECTION": "In",
+  "PROJECTILE TAG": "nil",
+  "VISUAL TAG": "nil",
+  "AMOUNT": 1,
+  "RUN ON SERVER": false,
+  "RELATIVE FROM BRANCH": false,
+  "CANCEL ON INTERRUPT": false,
+  "CAN COLLIDE": false,
+  "LAST HIT": -1
+}
+```
+
+</Callout>
+
+## GRAB
+
+```js
+nodes.GRAB({ ... });
+```
+
+| Option | Node key | Default | Description |
+| --- | --- | --- | --- |
+| `limb` | `BODY PART` | `"HumanoidRootPart"` | Which one of your limbs to use for grabbing. |
+| `target_limb` | `BODY PART2` | `"HumanoidRootPart"` | Which one of the target's limbs to grab. |
+| `position` | — | `null` | The TARGET LIMB's offset from LIMB. (X, Y, Z) |
+| `rotation` | — | `null` | The TARGET LIMB's rotation. (X, Y, Z) |
+| `time` | `TIME` | `1` | How long the Grab should be active for. |
+| `last_hit` | `LAST HIT` | `1` | Activates this NODE on a target hit in the last (value) seconds. |
+
+<Callout title="Default output">
+
+```json
+{
+  "K_NAME": "GRAB",
+  "BODY PART": "HumanoidRootPart",
+  "BODY PART2": "HumanoidRootPart",
+  "TIME": 1,
+  "POSITION": "0, 0, 0",
+  "ROTATION": "0, 0, 0",
+  "LAST HIT": 1
+}
+```
+
+</Callout>
+
+## PROJECTILE
+
+```js
+nodes.PROJECTILE({ ... });
+```
+
+| Option | Node key | Default | Description |
+| --- | --- | --- | --- |
+| `projectile_tag` | `PROJECTILE TAG` | `"nil"` | The name of the tag. Used by VISUAL, HITBOX and SOUND nodes as a link to the projectile. |
+| `position` | — | `null` | The projectile's starting position, the origin being the player's center. (X, Y, Z) |
+| `rotation` | — | `null` | The projectile's rotation, relative to the player's rotation. (X, Y, Z) |
+| `size` | — | `null` | The size of the projectile. (X, Y, Z) |
+| `speed` | `SPEED` | `1` | How fast the projectile should travel, in studs per second. |
+| `time` | `TIME` | `1` | How long the projectile should be active for. [no in-game documentation] |
+| `stun` | `STUN` | `1` | How long the stun on hit should last for, in seconds. |
+| `stun_anim` | `STUN ANIM` | `false` | Plays a generic stun animation on the hit target. |
+| `ignore_wakeup` | `IGNORE WAKEUP` | `true` | Ignore the wakeup stun immunity (disable for accurate M1s). |
+| `damage` | `DAMAGE` | `1` | How much damage should be dealt on hit. |
+| `debree` | `DEBREE` | `0` | If not 0, causes destruction. The value determines the Debree Fidelity, which is 2 by default. Negative values don't spawn debree. |
+| `attack_type` | `ATTACK TYPE` | `"Melee"` | The attack type of the projectile. [no in-game documentation] |
+| `blockable` | `BLOCKABLE` | `true` | The projectile is blockable from the front. |
+| `blockable_360` | `360 BLOCK` | `false` | The projectile is blockable regardless of orientation. |
+| `cancel_enemy` | `CANCEL ENEMY` | `true` | Cancel the hit target(s). |
+| `clear_knockback` | `CLEAR KNOCKBACK` | `false` | Clears hit target(s) velocity, also cancelling their ragdoll. |
+| `can_kill` | `CAN KILL` | `true` | The hitbox can kill the hit target(s). If disabled, the target(s) cannot receive more damage than their current health.. |
+| `hit_ragdoll` | `HIT RAGDOLL` | `false` | The hitbox can hit ragdolls. |
+| `hit_user` | `HIT USER` | `false` | The hitbox can hit the user of the skill. |
+| `single_target` | `SINGLE TARGET` | `true` | — |
+| `aim_last_hit` | `AIM LAST HIT` | `-1` | The projectile's rotation gets aligned towards the position of the LAST HIT target. (LAST HIT: target hit in the last (value) seconds.) |
+| `continue_` | `CONTINUE` | `false` | The projectile continues travelling after hitting a target, or colliding with the environment. |
+| `branch` | `BRANCH` | `"nil"` | Proceed to a BRANCH on hit. |
+| `branch_target` | `BRANCH TARGET` | `"nil"` | Force the hit target(s) to proceed to a BRANCH. |
+| `branch_collided` | `BRANCH COLLIDED` | `"nil"` | Proceed to a BRANCH if the projectile collided with the environment. If empty, the projectile ignores collisions |
+| `filter_interval` | `FILTER INTERVAL` | `1` | The projectile, upon hitting a target, waits (value) seconds before it can hit the same target. |
+| `reflect_count` | `REFLECT COUNT` | `0` | How many times the projectile can bounce off the environment before despawning. |
+| `cache` | `CACHE` | `true` | Stores projectile in the cache on hit, making PROJECTILE tag usable even after it's gone. |
+
+<Callout title="Default output">
+
+```json
+{
+  "K_NAME": "PROJECTILE",
+  "DAMAGE": 1,
+  "STUN": 1,
+  "SPEED": 1,
+  "SIZE": "6, 6, 6",
+  "POSITION": "0, 0, 4",
+  "ROTATION": "0, 0, 0",
+  "ATTACK TYPE": "Melee",
+  "PROJECTILE TAG": "nil",
+  "REFLECT COUNT": 0,
+  "FILTER INTERVAL": 1,
+  "BRANCH": "nil",
+  "BRANCH TARGET": "nil",
+  "BRANCH COLLIDED": "nil",
+  "CONTINUE": false,
+  "HIT RAGDOLL": false,
+  "STUN ANIM": false,
+  "HIT USER": false,
+  "SINGLE TARGET": true,
+  "BLOCKABLE": true,
+  "360 BLOCK": false,
+  "CAN KILL": true,
+  "AIM LAST HIT": -1,
+  "TIME": 1,
+  "IGNORE WAKEUP": true,
+  "DEBREE": 0,
+  "CANCEL ENEMY": true,
+  "CACHE": true,
+  "CLEAR KNOCKBACK": false
+}
+```
+
+</Callout>
+
+## COUNTER
+
+```js
+nodes.COUNTER({ ... });
+```
+
+| Option | Node key | Default | Description |
+| --- | --- | --- | --- |
+| `attack_type` | `ATTACK TYPE2` | `null` | The attack types to counter. [no in-game documentation] |
+| `time` | `TIME` | `1` | How long the counter is active for, in seconds. |
+| `stun` | `STUN` | `1` | How long the counter should stun the countered target for, in seconds. |
+| `cancel_enemy` | `CANCEL ENEMY` | `true` | Cancels the countered target. |
+| `branch` | `BRANCH` | `"nil"` | Proceed to a BRANCH upon successfully countering a target. |
+| `branch_target` | `BRANCH TARGET` | `"nil"` | Force the countered target to proceed to a BRANCH. |
+| `remove_on_hit` | `REMOVE ON HIT` | `true` | The counter gets removed upon activating. |
+| `reflect` | `REFLECT` | `false` | — |
+| `continue_` | `CONTINUE` | `false` | — |
+
+<Callout title="Default output">
+
+```json
+{
+  "K_NAME": "COUNTER",
+  "TIME": 1,
+  "STUN": 1,
+  "ATTACK TYPE2": "Melee",
+  "BRANCH": "nil",
+  "BRANCH TARGET": "nil",
+  "CANCEL ENEMY": true,
+  "REMOVE ON HIT": true,
+  "REFLECT": false,
+  "CONTINUE": false
+}
+```
+
+</Callout>
+
+## TAG
+
+```js
+nodes.TAG({ ... });
+```
+
+| Option | Node key | Default | Description |
+| --- | --- | --- | --- |
+| `tag` | `TAG` | `"nil"` | The name of the tag. This name can be used as a variable by all TAG nodes. |
+| `value` | `VALUE` | `"nil"` | Value of the tag. Can be a number, or a string of text. |
+| `time` | `TIME` | `1` | How long the tag should be active for, if changed. |
+| `check` | `CHECK` | `false` | Checks if the tag's value matches (value). Performing *less than* and *greater than* operations can be done by prefixing the value with &lt; or &gt; (e.g. &lt;1 for *less than 1*). |
+| `add_remove` | `ADD/REMOVE` | `true` | Only applicable if Set[_value] is false. If true, adds +(value) to the tag's value. If false, subtracts. |
+| `set_value` | `SET` | `true` | Replaces the tag's value with (value) |
+| `branch` | `BRANCH` | `"nil"` | Only applicable if Check is true. The branch that shall be proceeded to if Check successfully completes the comparison operation (e.g. if the tag's value is equal to (value), then proceed to BRANCH.) |
+| `last_hit` | `LAST HIT` | `-1` | Activates this NODE on a target hit in the last X seconds. |
+
+<Callout title="Default output">
+
+```json
+{
+  "K_NAME": "TAG",
+  "TAG": "nil",
+  "VALUE": "nil",
+  "TIME": 1,
+  "ADD/REMOVE": true,
+  "CHECK": false,
+  "SET": true,
+  "BRANCH": "nil",
+  "LAST HIT": -1
+}
+```
+
+</Callout>
+
+## STATE
+
+```js
+nodes.STATE({ ... });
+```
+
+| Option | Node key | Default | Description |
+| --- | --- | --- | --- |
+| `state` | `STATE` | `"Stun"` | The state to check or set. [no in-game documentation] |
+| `value` | `VALUE` | `1` | Used for SpeedMultiplier, JumpMultiplier, and Scale. |
+| `time` | `TIME` | `1` | How long the State should be active for. |
+| `cancel_on_end` | `CANCEL ON END` | `false` | The state gets cancelled when the skill ends. |
+| `disable_burst` | `DISABLE BURST` | `false` | Burst is disabled while the State is active. |
+| `last_hit` | `LAST HIT` | `-1` | Activates this NODE on a target hit in the last X seconds. |
+| `check` | `CHECK` | `false` | Checks if LAST HIT has that state |
+| `branch` | `BRANCH` | `"nil"` | Only applicable if Check is true. The BRANCH that shall be proceeded to if Check successfully completes the state check, then proceed to BRANCH. |
+| `state_tag` | `STATE TAG` | `"nil"` | — |
+
+<Callout title="Default output">
+
+```json
+{
+  "K_NAME": "STATE",
+  "STATE": "Stun",
+  "VALUE": 1,
+  "TIME": 1,
+  "DISABLE BURST": false,
+  "CANCEL ON END": false,
+  "LAST HIT": -1,
+  "BRANCH": "nil",
+  "CHECK": false,
+  "STATE TAG": "nil"
+}
+```
+
+</Callout>
+
+## TELEPORT
+
+```js
+nodes.TELEPORT({ ... });
+```
+
+| Option | Node key | Default | Description |
+| --- | --- | --- | --- |
+| `position` | — | `null` | Character's offset from last hit. (X, Y, Z) |
+| `rotation` | — | `null` | Character's rotation at the location. (X, Y, Z) |
+| `last_hit` | `LAST HIT` | `-1` | Applies POSITION and ROTATION of the LAST HIT target |
+| `projectile_tag` | `PROJECTILE TAG` | `"nil"` | Prioritizes the projectile with this tag instead of the LAST HIT target. |
+| `relative_from_branch` | `RELATIVE FROM BRANCH` | `false` | Prioritizes the origin of branch instead of the LAST HIT target |
+| `ignore_walls` | `IGNORE WALLS` | `false` | — |
+
+<Callout title="Default output">
+
+```json
+{
+  "K_NAME": "TELEPORT",
+  "POSITION": "0, 0, 0",
+  "ROTATION": "0, 0, 0",
+  "PROJECTILE TAG": "nil",
+  "LAST HIT": -1,
+  "RELATIVE FROM BRANCH": false,
+  "IGNORE WALLS": false
+}
+```
+
+</Callout>
+
+## ADD_AWAKENING
+
+```js
+nodes.ADD_AWAKENING({ ... });
+```
+
+| Option | Node key | Default | Description |
+| --- | --- | --- | --- |
+| `amount` | `AMOUNT` | `5` | The amount to add to your awakening bar. [no in-game documentation] |
+
+<Callout title="Default output">
+
+```json
+{
+  "K_NAME": "ULTGIB",
+  "AMOUNT": 5
+}
+```
+
+</Callout>
+
+## ADD_HEALTH
+
+```js
+nodes.ADD_HEALTH({ ... });
+```
+
+| Option | Node key | Default | Description |
+| --- | --- | --- | --- |
+| `amount` | `AMOUNT` | `5` | The amount to add to your health bar. |
+| `can_kill` | `CAN KILL` | `false` | Let the health lose be lethal. Off by default. |
+
+<Callout title="Default output">
+
+```json
+{
+  "K_NAME": "HPGIB",
+  "AMOUNT": 5,
+  "CAN KILL": false
+}
+```
+
+</Callout>
+
+## ADD_EVASION
+
+```js
+nodes.ADD_EVASION({ ... });
+```
+
+| Option | Node key | Default | Description |
+| --- | --- | --- | --- |
+| `amount` | `AMOUNT` | `5` | The amount to add to your evasion bar. [no in-game documentation] |
+
+<Callout title="Default output">
+
+```json
+{
+  "K_NAME": "EVGIB",
+  "AMOUNT": 5
+}
+```
+
+</Callout>
+
+## HIT_CANCEL
+
+```js
+nodes.HIT_CANCEL({ ... });
+```
+
+| Option | Node key | Default | Description |
+| --- | --- | --- | --- |
+| `time` | `TIME` | `1` | Proceeds to BRANCH depending on the value of Flip. |
+| `flip` | `FLIP` | `false` | If set to FALSE: proceed to branch if a target WAS hit in the last (Time) seconds. If set to TRUE: proceed to branch if a target WASN'T hit in the last (Time) seconds. |
+| `endlag` | `ENDLAG` | `1` | Become stunned for (value) seconds on cancel. |
+| `branch` | `BRANCH` | `"nil"` | The BRANCH the user shall proceed to. |
+
+<Callout title="Default output">
+
+```json
+{
+  "K_NAME": "HITCNCL",
+  "TIME": 1,
+  "ENDLAG": 1,
+  "BRANCH": "nil",
+  "FLIP": false
+}
+```
+
+</Callout>
+
+## SET_COOLDOWN
+
+```js
+nodes.SET_COOLDOWN({ ... });
+```
+
+| Option | Node key | Default | Description |
+| --- | --- | --- | --- |
+| `key` | `KEY` | `-1` | The move to set cooldown for. (-1 for current move) |
+| `cooldown` | `COOLDOWN` | `-1` | The cooldown itself. (-1 for default cooldown) |
+
+<Callout title="Default output">
+
+```json
+{
+  "KEY": -1,
+  "K_NAME": "SETCD",
+  "COOLDOWN": -1
+}
+```
+
+</Callout>
+
+## LOOP
+
+```js
+nodes.LOOP({ ... });
+```
+
+| Option | Node key | Default | Description |
+| --- | --- | --- | --- |
+| `loop_back` | `LOOP BACK` | `1` | The number of nodes behind the LOOP node to loop. [no in-game documentation] |
+| `loop_amount` | `LOOP AMOUNT` | `3` | The number of times to loop. [no in-game documentation] |
+| `hold` | `HOLD` | `false` | Hold the skill state active. [no in-game documentation] |
+
+<Callout title="Default output">
+
+```json
+{
+  "LOOP BACK": 1,
+  "HOLD": false,
+  "LOOP AMOUNT": 3,
+  "K_NAME": "LOOP"
+}
+```
+
+</Callout>
+
+## PARTICLE
+
+```js
+nodes.PARTICLE({ ... });
+```
+
+| Option | Node key | Default | Description |
+| --- | --- | --- | --- |
+| `part_size` | `PART SIZE` | `null` | Size of the emitted part; `(0, 0, 0)` emits from attachments instead. |
+| `texture` | `TEXTURE` | `null` | Texture (asset) ID. |
+| `emit_count` | `EMIT COUNT` | `null` | Particles spawned at once, used when `duration` is 0. |
+| `rate` | `RATE` | `null` | Particles per second, used when `duration` is above 0. |
+| `duration` | `DURATION` | `null` | Seconds the emitter stays enabled. |
+| `color` | `COLOR` | `null` | Colour sequence, `"r,g,b r,g,b ..."`. |
+| `size` | `SIZE` | `null` | Number sequence, `"a, b, ..."`. |
+| `brightness` | `BRIGHTNESS` | `null` | How emissive the particle is. |
+| `transparency` | `TRANSPARENCY` | `null` | — |
+| `squash` | `SQUASH` | `null` | — |
+| `lifetime` | `LIFETIME` | `null` | — |
+| `speed` | `SPEED` | `null` | — |
+| `rotation` | `ROTATION` | `null` | — |
+| `rot_speed` | `ROT SPEED` | `null` | — |
+| `acceleration` | `ACCELERATION` | `null` | — |
+| `drag` | `DRAG` | `null` | — |
+| `light_emission` | `LIGHT EMISSION` | `null` | — |
+| `light_influence` | `LIGHT INFLUENCE` | `null` | — |
+| `z_offset` | `ZOFFSET` | `null` | — |
+| `spread_angle` | `SPREAD ANGLE` | `null` | — |
+| `position` | `POSITION` | `null` | — |
+| `lock_to_part` | `LOCK TO PART` | `null` | — |
+| `limb` | `BODY PART` | `null` | — |
+| `orientation_type` | `ORIENTATION TYPE` | `null` | — |
+| `emission_direction` | `EMISSION DIRECTION` | `null` | — |
+| `flipbook_size` | `FLIPBOOK SIZE` | `null` | — |
+| `flipbook_mode` | `FLIPBOOK MODE` | `null` | — |
+| `flipbook_framerate` | `FLIPBOOK FRAMERATE` | `null` | — |
+| `shape` | `SHAPE` | `null` | — |
+| `shape_inout` | `SHAPE INOUT` | `null` | — |
+| `shape_partial` | `SHAPE PARTIAL` | `null` | — |
+| `run_on_server` | `RUN ON SERVER` | `null` | — |
+| `client_sided` | `CLIENT SIDED` | `null` | — |
+| `cancel_tag` | `CANCEL TAG` | `null` | — |
+| `cancel` | `CANCEL` | `null` | — |
+| `cancel_on_interrupt` | `CANCEL ON INTERRUPT` | `null` | — |
+| `projectile_tag` | `PROJECTILE TAG` | `null` | Emit from a projectile with this tag. |
+| `last_hit` | `LAST HIT` | `null` | Activate on a target hit in the last N seconds. |
+| `...fields` | — | — | Any extra key, passed through verbatim. |
+
+<Callout title="Default output">
+
+```json
+{
+  "K_NAME": "PARTICLE"
+}
+```
+
+</Callout>
+
+## LOOK
+
+```js
+nodes.LOOK({ ... });
+```
+
+| Option | Node key | Default | Description |
+| --- | --- | --- | --- |
+| `time` | `TIME` | `null` | How long the look action lasts. |
+| `smoothness` | `SMOOTHNESS` | `40` | Transition smoothness; lower is smoother. Defaults to 40. |
+| `horizontal_only` | `HORIZONTAL ONLY` | `null` | Lock the camera to the horizontal axis. |
+| `last_hit` | `LAST HIT` | `-1` | Face a target hit in the last N seconds. Defaults to -1. |
+| `relative_from_branch` | `RELATIVE FROM BRANCH` | `null` | Act relative to the branch that triggered this. |
+| `projectile_tag` | `PROJECTILE TAG` | `null` | Look at the projectile with this tag. |
+| `camera_direction` | `CAMERA DIRECTION` | `null` | Look where the camera faces instead of the cursor. |
+| `grounded` | `GROUNDED` | `null` | Affect root verticality based on the body. |
+
+<Callout title="Default output">
+
+```json
+{
+  "K_NAME": "LOOK",
+  "SMOOTHNESS": 40,
+  "LAST HIT": -1
+}
+```
+
+</Callout>
+
+## SETMELEE
+
+```js
+nodes.SETMELEE({ ... });
+```
+
+| Option | Node key | Default | Description |
+| --- | --- | --- | --- |
+| `combo` | `COMBO` | `null` | Which M1 to set; `-1` means the last M1 used, and `0` prevents melee for `offset` seconds. |
+| `offset` | `OFFSET` | `null` | How long until the user's M1s reset. |
+| `last_hit` | `LAST HIT` | `-1` | Activate on a target hit in the last N seconds. Defaults to -1. |
+
+<Callout title="Default output">
+
+```json
+{
+  "K_NAME": "SETMELEE",
+  "LAST HIT": -1
+}
+```
+
+</Callout>
+
+## raw
+
+For a node with no builder, or a field that is not modelled:
+
+```js
+nodes.raw('LOOK', { TARGET: 'Head' });
+```
+

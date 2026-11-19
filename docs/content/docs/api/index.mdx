@@ -1,0 +1,59 @@
+---
+title: API reference
+description: Every export of @dnd-ed/jsshenanigans, organised by module.
+---
+
+The library is one entry point plus a handful of subpath modules. The main entry
+re-exports the important pieces and the modules themselves as namespaces.
+
+## Entry points
+
+| Import | What it gives you |
+| --- | --- |
+| `@dnd-ed/jsshenanigans` | `Character`, the codec functions, `dumps`/`describe`, `Branch`/`Properties`, `Animations`, `VERSION`, and the `nodes`, `conditions`, `codec`, `tools` and `types` namespaces |
+| `@dnd-ed/jsshenanigans/nodes` | every node builder |
+| `@dnd-ed/jsshenanigans/conditions` | every condition builder |
+| `@dnd-ed/jsshenanigans/codec` | `compress`, `decompress`, `encode`, `decode`, `register_backend`, `backend_name` |
+| `@dnd-ed/jsshenanigans/tools` | `dumps`, `describe` |
+| `@dnd-ed/jsshenanigans/types` | `Animations` and the name tables |
+| `@dnd-ed/jsshenanigans/defaults` | the default tables used when stripping fields |
+
+## Top-level exports
+
+```js
+import * as jss from '@dnd-ed/jsshenanigans';
+
+jss.Character;            // the builder and loader
+jss.compress;             // JSON string -> character code
+jss.decompress;           // character code -> JSON string
+jss.encode;               // payload -> character code
+jss.decode;               // character code -> payload
+jss.backend_name;         // active zstd backend
+jss.register_backend;     // install a custom zstd backend
+jss.dumps;                // pretty-print a code
+jss.describe;             // summarise a code
+jss.Branch;               // branch helper
+jss.Properties;           // skill properties helper
+jss.Animations;           // animation table
+jss.VERSION;              // the library version
+```
+
+## Reference
+
+<Cards>
+  <Card title="Character" href="/docs/api/character" />
+  <Card title="Codec" href="/docs/api/codec" />
+  <Card title="Nodes" href="/docs/api/nodes" />
+  <Card title="Conditions" href="/docs/api/conditions" />
+  <Card title="Tools" href="/docs/api/tools" />
+  <Card title="Utilities" href="/docs/api/utilities" />
+  <Card title="Errors" href="/docs/api/errors" />
+  <Card title="Types" href="/docs/api/types" />
+</Cards>
+
+## TypeScript
+
+Every module ships declarations, so the builders are typed, including the node
+option names and the animation table. The name unions (`SkillName`,
+`SpecialName`, `BodyPartName`, ...) are exported from
+`@dnd-ed/jsshenanigans/types`.

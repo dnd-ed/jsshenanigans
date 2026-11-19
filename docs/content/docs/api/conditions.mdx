@@ -1,0 +1,203 @@
+---
+title: Condition builders
+description: Every `conditions.*` builder and its options.
+---
+
+Every `conditions.*` builder and its options.
+
+```js
+import * as conditions from '@dnd-ed/jsshenanigans/conditions';
+```
+
+## IN_AIR
+
+```js
+conditions.IN_AIR({ ... });
+```
+
+| Option | Node key | Default | Description |
+| --- | --- | --- | --- |
+| `flip` | `FLIP` | `false` | If false, the player must be in the air. If true, the player must not be in the air. |
+
+<Callout title="Default output">
+
+```json
+{
+  "K_NAME": "AIR",
+  "FLIP": false
+}
+```
+
+</Callout>
+
+## IS_JUMPING
+
+```js
+conditions.IS_JUMPING({ ... });
+```
+
+| Option | Node key | Default | Description |
+| --- | --- | --- | --- |
+| `flip` | `FLIP` | `false` | If false, the player must be jumping. If true, the player must not be jumping. |
+
+<Callout title="Default output">
+
+```json
+{
+  "K_NAME": "JUMP",
+  "FLIP": false
+}
+```
+
+</Callout>
+
+## HAS_TARGET
+
+```js
+conditions.HAS_TARGET({ ... });
+```
+
+| Option | Node key | Default | Description |
+| --- | --- | --- | --- |
+| `flip` | `FLIP` | `false` | If false, the player must be hovering their cursor over another player. If true, the player must not be hovering their cursor over another player. |
+
+<Callout title="Default output">
+
+```json
+{
+  "K_NAME": "AIM",
+  "FLIP": false
+}
+```
+
+</Callout>
+
+## IS_AWAKENED
+
+```js
+conditions.IS_AWAKENED({ ... });
+```
+
+| Option | Node key | Default | Description |
+| --- | --- | --- | --- |
+| `flip` | `FLIP` | `false` | If false, the player must have their awakening. If true, the player must not have their awakening. |
+
+<Callout title="Default output">
+
+```json
+{
+  "K_NAME": "ULT",
+  "FLIP": false
+}
+```
+
+</Callout>
+
+## HAS_AWK_BAR
+
+```js
+conditions.HAS_AWK_BAR({ ... });
+```
+
+| Option | Node key | Default | Description |
+| --- | --- | --- | --- |
+| `amount` | `AMOUNT` | `5` | The amount of the awakening bar to check. Defaults to 5%. |
+| `flip` | `FLIP` | `false` | If false, the player must have (amount) of awakening or more. If true, the player must have less than (amount) of awakening. |
+
+<Callout title="Default output">
+
+```json
+{
+  "K_NAME": "BAR",
+  "AMOUNT": 5,
+  "FLIP": false
+}
+```
+
+</Callout>
+
+## DURABILITY
+
+```js
+conditions.DURABILITY({ ... });
+```
+
+| Option | Node key | Default | Description |
+| --- | --- | --- | --- |
+| `durability` | `DURABILITY` | `1` | The durability of the current move to check. (may be inacurate, please change if so) |
+
+<Callout title="Default output">
+
+```json
+{
+  "K_NAME": "DUR",
+  "DURABILITY": 1
+}
+```
+
+</Callout>
+
+## HAS_HEALTH
+
+```js
+conditions.HAS_HEALTH({ ... });
+```
+
+| Option | Node key | Default | Description |
+| --- | --- | --- | --- |
+| `amount` | `AMOUNT` | `1` | The amount of health to check. |
+| `flip` | `FLIP` | `false` | If false, the player must have (amount) of health or more. If true, the player must have less than (amount) of health. |
+
+<Callout title="Default output">
+
+```json
+{
+  "K_NAME": "HP",
+  "AMOUNT": 1,
+  "FLIP": false
+}
+```
+
+</Callout>
+
+## IS_IN_DOMAIN
+
+```js
+conditions.IS_IN_DOMAIN({ ... });
+```
+
+| Option | Node key | Default | Description |
+| --- | --- | --- | --- |
+| `flip` | `FLIP` | `false` | If false, the player must be in a domain. If true, the player must not be in a domain. |
+
+<Callout title="Default output">
+
+```json
+{
+  "K_NAME": "DOMAIN",
+  "FLIP": false
+}
+```
+
+</Callout>
+
+## IS_HOLDING
+
+```js
+conditions.IS_HOLDING({ ... });
+```
+
+| Option | Node key | Default | Description |
+| --- | --- | --- | --- |
+| `flip` | `FLIP` | `false` | If false, the player must be holding the skill key. If true, the player must not be holding the skill key. |
+
+<Callout title="Default output">
+
+```json
+{
+  "K_NAME": "HOLD",
+  "FLIP": false
+}
+```
+
+</Callout>

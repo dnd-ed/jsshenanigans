@@ -1,0 +1,66 @@
+---
+title: Utilities
+description: Helpers for branches and skill properties.
+---
+
+```js
+import { Branch, Properties } from '@dnd-ed/jsshenanigans';
+```
+
+## `Branch`
+
+Defines a branch, the thing a `BRANCH` node or a hitbox points at.
+
+```js
+const branch = Branch(
+  [nodes.WAIT({ TIME: 0.25 })],
+  [conditions.IN_AIR()],
+);
+// { nodes: [...], conditions: [...] }
+```
+
+| Argument | Default | Description |
+| --- | --- | --- |
+| `nodes` | required | The nodes in the branch. |
+| `conditions` | `[]` | The conditions that guard the branch. |
+
+Pass it to `create.skill` under `branches`:
+
+```js
+character.create.skill('Combo', [nodes.HITBOX({ branch: 'b' })], {
+  branches: { b: Branch([nodes.WAIT({ TIME: 0.2 })]) },
+});
+```
+
+## `Properties`
+
+Returns the skill's `Prop` object. Values equal to the defaults are stripped
+when the skill is built.
+
+```js
+character.create.skill('Tanky', [nodes.WAIT()], {
+  properties: Properties({ invincible: true, damage_multiplier: 2 }),
+});
+```
+
+| Option | Key | Default | Description |
+| --- | --- | --- | --- |
+| `damage_multiplier` | `DMG` | `1` | Damage multiplier. |
+| `knockback_multiplier` | `KNOCK` | `1` | Knockback multiplier. |
+| `invincible` | `INV` | `false` | Makes the user invincible. |
+| `replace_skill_if_occupied` | `REP` | `false` | Prevents custom moves from stacking. |
+| `prevent_override` | `REP2` | `false` | Prevents the skill from being overridden. |
+| `hide_in_awakening` | `AWK` | `false` | Hides the skill in awakening mode. |
+| `keep_when_moveset_switches` | `KEEP` | `false` | Keeps the skill when the moveset switches. |
+| `hide_in_base` | `AWK2` | `false` | Hides the skill in base mode. |
+| `use_when_obtained` | `USE` | `false` | Uses the skill when the player gets it. |
+| `use_on_death` | `USEONDEATH` | `false` | Uses the skill when the player dies. |
+| `no_stun` | `NOSTUN` | `false` | Lets other skills be used while this one is active. |
+| `no_cancel` | `NOCANCEL` | `false` | Ignores cancelling from taking damage. |
+| `variant_tag` | `VAR` | `"-"` | The variant tag. |
+
+<Callout title="Hiding needs both flags">
+  A hidden skill needs `hide_in_awakening` **and** `hide_in_base`. A single flag
+  only hides it in one mode. This is what `Character({ hide_character_extras:
+  true })` does.
+</Callout>
