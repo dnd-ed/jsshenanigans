@@ -1,9 +1,16 @@
 import Link from 'next/link';
 
+import { basePath } from '@/lib/shared';
+
 export default function HomePage() {
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col justify-center gap-6 px-4 py-16 text-center">
-      <h1 className="text-4xl font-bold">jsshenanigans</h1>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={`${basePath}/jss_logo.png`}
+        alt="jsshenanigans"
+        className="mx-auto w-full max-w-xl"
+      />
       <p className="text-fd-muted-foreground">
         Build, load and edit Jujutsu Shenanigans movesets from JavaScript.
       </p>
