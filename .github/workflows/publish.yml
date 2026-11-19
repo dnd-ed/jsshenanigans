@@ -30,6 +30,7 @@ jobs:
 
       - run: npm install
       - run: npm run lint
+      - run: npm run typecheck
 
   test:
     name: test (${{ matrix.os }}, node ${{ matrix.node }})
