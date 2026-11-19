@@ -10,7 +10,6 @@ function deepFreeze(value) {
   return value;
 }
 
-/** @typedef {typeof Specials[number]} SpecialName */
 export const Specials = Object.freeze([
   "Limitless",
   "Combat Instincts",
@@ -42,7 +41,6 @@ export const Specials = Object.freeze([
   "Earthen Insect Trance"
 ]);
 
-/** @typedef {typeof Effects[number]} EffectName */
 export const Effects = Object.freeze([
   "Cancel",
   "Overlay",
@@ -93,7 +91,6 @@ export const Effects = Object.freeze([
   "Glow"
 ]);
 
-/** @typedef {typeof AttackType[number]} AttackTypeName */
 export const AttackType = Object.freeze([
   "Melee",
   "Bullet",
@@ -102,7 +99,6 @@ export const AttackType = Object.freeze([
   "Domain"
 ]);
 
-/** @typedef {typeof States[number]} StateName */
 export const States = Object.freeze([
   "Cancel",
   "Stun",
@@ -134,7 +130,6 @@ export const States = Object.freeze([
   "Character"
 ]);
 
-/** @typedef {typeof EasingStyles[number]} EasingStyleName */
 export const EasingStyles = Object.freeze([
   "Linear",
   "Sine",
@@ -144,14 +139,12 @@ export const EasingStyles = Object.freeze([
   "Back"
 ]);
 
-/** @typedef {typeof EasingDirections[number]} EasingDirectionName */
 export const EasingDirections = Object.freeze([
   "In",
   "Out",
   "InOut"
 ]);
 
-/** @typedef {typeof BodyParts[number]} BodyPartName */
 export const BodyParts = Object.freeze([
   "HumanoidRootPart",
   "Head",
@@ -162,7 +155,6 @@ export const BodyParts = Object.freeze([
   "Left Leg"
 ]);
 
-/** @typedef {typeof Skills[number]} SkillName */
 export const Skills = Object.freeze([
   "Cancel",
   "Lapse Blue",
@@ -336,7 +328,6 @@ export const Skills = Object.freeze([
   "Roach Swarm"
 ]);
 
-/** @typedef {[number, number]} AnimationRef */
 export const Animations = deepFreeze({
   "HonoredOne": {
     "HollowPurple": [
