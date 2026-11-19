@@ -31,6 +31,7 @@ export {
   decode,
   decompress,
   encode,
+  register_backend,
 } from "./codec.js";
 export { Character } from "./character.js";
 export { dumps, describe } from "./tools.js";

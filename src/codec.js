@@ -9,26 +9,21 @@
  * layered on top --- the zstd frame is a plain standard frame and the base64
  * uses the standard alphabet, so decoding is fully reversible.
  *
- * This module is deliberately backend-agnostic. A zstd implementation is chosen
- * automatically, in this order:
+ * The codec is deliberately backend-agnostic and isomorphic:
  *
- * 1. `node:zlib` (Node 22.15+ ships zstd)
- * 2. `fzstd` (optional, decompression only)
+ * - In Node it uses `node:zlib` (Node 22.15+ ships zstd), then `fzstd` if it is
+ *   installed.
+ * - In a browser neither exists, so a WASM backend can be installed with
+ *   {@link register_backend}; see `docs/` in the repository for a working one.
  *
  * Set the `JSSHENANIGANS_ZSTD_BACKEND` environment variable (e.g. to "fzstd")
- * to prefer a specific one; the rest stay as fallbacks.
+ * to prefer a specific backend; the rest stay as fallbacks.
  */
-
-import { Buffer } from "node:buffer";
-import { createRequire } from "node:module";
-import zlib from "node:zlib";
 
 import { BackendNotFoundError, InvalidCharacterCodeError } from "./errors.js";
 
-const require = createRequire(import.meta.url);
-
 /** Every zstd frame begins with these four bytes. */
-export const ZSTD_MAGIC = Buffer.from([0x28, 0xb5, 0x2f, 0xfd]);
+export const ZSTD_MAGIC = new Uint8Array([0x28, 0xb5, 0x2f, 0xfd]);
 
 /** Environment variable used to prefer a specific zstd backend. */
 export const ENV_BACKEND = "JSSHENANIGANS_ZSTD_BACKEND";
@@ -36,16 +31,50 @@ export const ENV_BACKEND = "JSSHENANIGANS_ZSTD_BACKEND";
 // The first four base64 characters of any character code (ZSTD_MAGIC).
 const MAGIC_B64_PREFIX = "KLUv";
 
+const encoder = new TextEncoder();
+const decoder = new TextDecoder();
+
 /**
  * @typedef {object} Backend
  * @property {string} name
- * @property {((bytes: Buffer) => Buffer) | null} compress
- * @property {(bytes: Buffer) => Buffer} decompress
+ * @property {((bytes: Uint8Array) => Uint8Array) | null} [compress]
+ * @property {(bytes: Uint8Array) => Uint8Array} decompress
  */
+
+// ------------------------------------------------------------------ base64 --- //
+
+/** @param {Uint8Array} bytes @returns {string} */
+function bytesToBase64(bytes) {
+  if (typeof Buffer !== "undefined") {
+    return Buffer.from(bytes).toString("base64");
+  }
+  let binary = "";
+  for (let index = 0; index < bytes.length; index += 1) {
+    binary += String.fromCharCode(bytes[index]);
+  }
+  return btoa(binary);
+}
+
+/** @param {string} text @returns {Uint8Array} */
+function base64ToBytes(text) {
+  if (typeof Buffer !== "undefined") {
+    return new Uint8Array(Buffer.from(text, "base64"));
+  }
+  const binary = atob(text);
+  const bytes = new Uint8Array(binary.length);
+  for (let index = 0; index < binary.length; index += 1) {
+    bytes[index] = binary.charCodeAt(index);
+  }
+  return bytes;
+}
+
+// ---------------------------------------------------------------- backends --- //
 
 /** @returns {Backend} */
 function loadZlib() {
+  const zlib = globalThis.process?.getBuiltinModule?.("node:zlib");
   if (
+    !zlib ||
     typeof zlib.zstdCompressSync !== "function" ||
     typeof zlib.zstdDecompressSync !== "function"
   ) {
@@ -53,41 +82,78 @@ function loadZlib() {
   }
   return {
     name: "node:zlib",
-    compress: (bytes) => zlib.zstdCompressSync(bytes),
-    decompress: (bytes) => zlib.zstdDecompressSync(bytes),
+    compress: (bytes) => new Uint8Array(zlib.zstdCompressSync(bytes)),
+    decompress: (bytes) => new Uint8Array(zlib.zstdDecompressSync(bytes)),
   };
 }
 
 /** @returns {Backend} */
 function loadFzstd() {
+  const nodeModule = globalThis.process?.getBuiltinModule?.("node:module");
+  if (!nodeModule) throw new Error("fzstd is Node-only");
+  const require = nodeModule.createRequire(import.meta.url);
   const fzstd = require("fzstd");
   return {
     name: "fzstd",
     compress: null,
-    decompress: (bytes) => Buffer.from(fzstd.decompress(bytes)),
+    decompress: (bytes) => new Uint8Array(fzstd.decompress(bytes)),
   };
 }
 
-/** @type {ReadonlyArray<[string, () => Backend]>} */
+/** @type {Array<[string, () => Backend]>} */
 const BACKENDS = [
   ["node:zlib", loadZlib],
   ["fzstd", loadFzstd],
 ];
 
+/** @type {Backend[]} */
+const customBackends = [];
+
+/**
+ * Install a custom backend, used before the built-in ones.
+ *
+ * This is how a browser (or a worker) gets zstd: neither `node:zlib` nor
+ * `fzstd` is available there, so hand the codec something that can decompress
+ * (and, if you want to export codes, compress) instead.
+ *
+ * @param {Backend} backend
+ */
+export function register_backend(backend) {
+  if (
+    !backend ||
+    typeof backend.name !== "string" ||
+    typeof backend.decompress !== "function"
+  ) {
+    throw new TypeError("a backend needs at least { name, decompress }");
+  }
+  customBackends.unshift(backend);
+  cachedBackend = null; // re-resolve on the next call
+}
+
 /** @type {Backend | null} */
 let cachedBackend = null;
 
+/** @returns {Backend[]} */
+function candidates() {
+  const preferred = (globalThis.process?.env?.[ENV_BACKEND] ?? "")
+    .trim()
+    .toLowerCase();
+
+  const list = [
+    ...customBackends.map((backend) => [backend.name, () => backend]),
+    ...BACKENDS,
+  ];
+  if (preferred) {
+    list.sort((a, b) => Number(a[0] !== preferred) - Number(b[0] !== preferred));
+  }
+  return list;
+}
+
 /** @returns {Backend} */
 function loadBackend() {
-  const preferred = (process.env[ENV_BACKEND] ?? "").trim().toLowerCase();
-  const candidates = [...BACKENDS];
-  if (preferred) {
-    candidates.sort((a, b) => Number(a[0] !== preferred) - Number(b[0] !== preferred));
-  }
-
   /** @type {string[]} */
   const problems = [];
-  for (const [name, loader] of candidates) {
+  for (const [name, loader] of candidates()) {
     try {
       return loader();
     } catch (exc) {
@@ -96,8 +162,9 @@ function loadBackend() {
   }
 
   throw new BackendNotFoundError(
-    `no usable zstd backend found (tried ${problems.join(", ")}); ` +
-      "use Node 22.15+ or install 'fzstd'",
+    "no usable zstd backend found (tried " +
+      problems.join(", ") +
+      "); use Node 22.15+, install 'fzstd', or call register_backend()",
   );
 }
 
@@ -111,6 +178,8 @@ function backend() {
 export function backend_name() {
   return backend().name;
 }
+
+// ------------------------------------------------------------------ codec --- //
 
 /** @param {string} code @returns {string} */
 function cleanCode(code) {
@@ -127,22 +196,28 @@ function cleanCode(code) {
   return cleaned;
 }
 
-/** @param {string} cleaned @returns {Buffer} */
-function decodeBase64(cleaned) {
-  const padded = cleaned + "=".repeat((4 - (cleaned.length % 4)) % 4);
-  if (!/^[A-Za-z0-9+/]*={0,2}$/.test(padded)) {
-    throw new InvalidCharacterCodeError("not valid base64");
-  }
-  return Buffer.from(padded, "base64");
+/** @param {Uint8Array} bytes @returns {boolean} */
+function hasZstdMagic(bytes) {
+  return (
+    bytes.length >= 4 &&
+    bytes[0] === ZSTD_MAGIC[0] &&
+    bytes[1] === ZSTD_MAGIC[1] &&
+    bytes[2] === ZSTD_MAGIC[2] &&
+    bytes[3] === ZSTD_MAGIC[3]
+  );
 }
 
-/** @param {string} code @returns {Buffer} */
+/** @param {string} code @returns {Uint8Array} */
 function decodeBytes(code) {
   const cleaned = cleanCode(code);
   if (!cleaned) throw new InvalidCharacterCodeError("empty character code");
 
-  const raw = decodeBase64(cleaned);
-  if (!raw.subarray(0, 4).equals(ZSTD_MAGIC)) {
+  const padded = cleaned + "=".repeat((4 - (cleaned.length % 4)) % 4);
+  if (!/^[A-Za-z0-9+/]*={0,2}$/.test(padded)) {
+    throw new InvalidCharacterCodeError("not valid base64");
+  }
+  const raw = base64ToBytes(padded);
+  if (!hasZstdMagic(raw)) {
     throw new InvalidCharacterCodeError(
       "decoded payload is not a zstd frame; this does not look like a " +
         "character code",
@@ -175,7 +250,7 @@ export function compress(rawJson) {
   if (typeof active.compress !== "function") {
     throw new BackendNotFoundError(`backend '${active.name}' cannot compress`);
   }
-  return active.compress(Buffer.from(rawJson, "utf8")).toString("base64");
+  return bytesToBase64(active.compress(encoder.encode(rawJson)));
 }
 
 /**
@@ -184,7 +259,7 @@ export function compress(rawJson) {
  * @returns {string}
  */
 export function decompress(code) {
-  return decodeBytes(code).toString("utf8");
+  return decoder.decode(decodeBytes(code));
 }
 
 /**
