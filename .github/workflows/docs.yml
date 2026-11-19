@@ -1,0 +1,71 @@
+# Build the Fumadocs site and deploy it to GitHub Pages.
+#
+# One-time setup: in the repository settings, set Pages -> Build and deployment
+# -> Source to "GitHub Actions".
+#
+# The site is a static export (`output: 'export'`), so there is nothing to run
+# on a server. `NEXT_PUBLIC_BASE_PATH` defaults to `/jsshenanigans`; set it to
+# an empty string (or a custom domain path) if you host it elsewhere.
+
+name: docs
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docs/**"
+      - "src/**"
+      - "package.json"
+      - ".github/workflows/docs.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Install the library
+        run: npm install
+        working-directory: .
+
+      - name: Install the docs site
+        run: npm install
+        working-directory: docs
+
+      - name: Build the static site
+        run: npm run build
+        working-directory: docs
+        env:
+          NEXT_PUBLIC_BASE_PATH: /jsshenanigans
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/out
+
+  deploy:
+    name: deploy
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
