@@ -1,5 +1,6 @@
 <div align="center">
-  <h1>jsshenanigans</h1>
+  <img src="https://raw.githubusercontent.com/dnd-ed/jsshenanigans/refs/heads/main/assets/jss_logo.png" alt="jsslogo" width="700" />
+  <br />
   <em>the ssssnakiest way to build jjs movesets</em>
 </div>
 
@@ -29,18 +30,14 @@ script can modify the JSON to create a custom moveset.
 
 ## Usage
 
-First, install the library.
+First, install the library using `npm install jsshenanigans`.
 
-```sh
-npm install jsshenanigans
-```
-
-Then import the library and create a character.
+Then, in a JavaScript file, import the library as `jss` and create a character:
 
 ```js
-import * as pts from "jsshenanigans";
+import * as jss from "jsshenanigans";
 
-const character = new pts.Character();
+const character = new jss.Character();
 ```
 
 From here, you can create skills using `character.create.skill()`.
@@ -49,7 +46,20 @@ From here, you can create skills using `character.create.skill()`.
 character.create.skill("Super Cool Skill", { cooldown: 5 });
 ```
 
+Nodes live in their own module, so import them too:
+
+```js
+import * as nodes from "jsshenanigans/nodes";
+
+character.create.skill("Punch", [nodes.HITBOX({ damage: 5 })]);
+```
+
 Check out `demo/demo.js` for a full example.
+
+## TypeScript
+
+The library ships type declarations, so TypeScript and editors with a language
+server get full autocomplete for every builder.
 
 ## Features
 
@@ -67,8 +77,21 @@ Check out `demo/demo.js` for a full example.
 
 ## Requirements
 
-Node.js **22.15+** (it ships `zstd` in `node:zlib`). No other runtime
+Node.js **22.15+** (it ships `zstd` in `node:zlib`). No required runtime
 dependencies.
+
+## zstd backends
+
+The codec picks a backend automatically:
+
+1. `node:zlib` --- the default, native, and the only one that can compress.
+2. [`fzstd`](https://www.npmjs.com/package/fzstd) --- an optional, pure-JS
+   fallback. It can only *decompress*, so it is used for reading codes when
+   `node:zlib` is unavailable.
+
+Set `JSSHENANIGANS_ZSTD_BACKEND` (e.g. to `"fzstd"`) to prefer a specific one.
+Run `npm run bench` to compare the installed backends; `node:zlib` is several
+times faster, which is why it stays the default.
 
 ## License
 
