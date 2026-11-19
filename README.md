@@ -4,7 +4,7 @@
   <em>the ssssnakiest way to build jjs movesets</em>
 </div>
 
-![jsshenanigans on npm](https://img.shields.io/npm/v/jsshenanigans)
+![jsshenanigans on npm](https://img.shields.io/npm/v/@dnd-ed/jsshenanigans)
 
 > [!IMPORTANT]
 > This library is a JavaScript port of [PythonShenanigans](https://github.com/dnd-ed/pythonshenanigans),
@@ -30,12 +30,12 @@ script can modify the JSON to create a custom moveset.
 
 ## Usage
 
-First, install the library using `npm install jsshenanigans`.
+First, install the library using `npm install @dnd-ed/jsshenanigans`.
 
 Then, in a JavaScript file, import the library as `jss` and create a character:
 
 ```js
-import * as jss from "jsshenanigans";
+import * as jss from "@dnd-ed/jsshenanigans";
 
 const character = new jss.Character();
 ```
@@ -49,7 +49,7 @@ character.create.skill("Super Cool Skill", { cooldown: 5 });
 Nodes live in their own module, so import them too:
 
 ```js
-import * as nodes from "jsshenanigans/nodes";
+import * as nodes from "@dnd-ed/jsshenanigans/nodes";
 
 character.create.skill("Punch", [nodes.HITBOX({ damage: 5 })]);
 ```

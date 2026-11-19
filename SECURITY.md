@@ -19,7 +19,7 @@ untrusted.
   bytes with no cap on the output size. zstd frames are highly compressible, so a
   short code can expand into a very large payload and exhaust memory. There is
   currently no limit --- decode only codes you trust, or wrap
-  `jsshenanigans.codec.decode` in your own size/time guard.
+  `codec.decode` from `@dnd-ed/jsshenanigans/codec` in your own size/time guard.
 * **Malicious movesets are a game-level risk, not a library-level one.** The
   library faithfully preserves whatever a payload contains, including skills that
   are disruptive in-game. Only load codes you generated or reviewed.
