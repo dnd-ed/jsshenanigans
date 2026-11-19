@@ -1,0 +1,66 @@
+---
+title: Nodes and conditions
+description: The node and condition builders, and why defaults are stripped.
+---
+
+Nodes and conditions live in their own modules:
+
+```js
+import * as nodes from '@dnd-ed/jsshenanigans/nodes';
+import * as conditions from '@dnd-ed/jsshenanigans/conditions';
+```
+
+## Builders return plain objects
+
+Nothing is a class. A builder returns the exact object the game stores, so you
+can read it, patch it, or hand it back:
+
+```js
+nodes.HITBOX({ damage: 5, size: [6, 6, 4] });
+// {
+//   K_NAME: 'HITBOX',
+//   POSITION: '0, 0, 4',
+//   SIZE: '6, 6, 4',
+//   DAMAGE: 5,
+//   ...
+// }
+```
+
+Vectors accept arrays, tuples or an already formatted string, so a value copied
+out of a decoded code can go straight back in:
+
+```js
+nodes.HITBOX({ position: [1, 2, 3] });   // "1, 2, 3"
+nodes.HITBOX({ position: '1, 2, 3' });   // "1, 2, 3"
+```
+
+## Defaults are dropped
+
+When a skill is built, any field equal to the node's default is removed, so the
+output stays close to what the game's editor writes. You can see this in the
+editor: adding a `WAIT` node leaves `{ "K_NAME": "WAIT" }` until you change the
+time.
+
+```js
+const character = new jss.Character();
+character.create.skill('demo', [nodes.ANIMATION()]);
+// DATA.Line[0] === { K_NAME: 'ANIM' }
+```
+
+## Conditions
+
+```js
+character.create.skill('air only', [nodes.WAIT()], {
+  conditions: [conditions.IN_AIR(), conditions.HAS_AWK_BAR({ amount: 5 })],
+});
+```
+
+## Escape hatches
+
+`nodes.raw()` builds any node verbatim, and `PARTICLE` accepts extra keys, for
+anything the typed arguments do not cover:
+
+```js
+nodes.raw('LOOK', { TARGET: 'Head' });
+nodes.PARTICLE({ part_size: [1, 1, 1], custom_thing: 1 });
+```

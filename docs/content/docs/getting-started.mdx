@@ -1,0 +1,94 @@
+---
+title: Getting started
+description: Install jss, build a moveset, and learn how the codec picks a zstd backend.
+---
+
+## Install
+
+```bash
+npm install @dnd-ed/jsshenanigans
+```
+
+Node.js **22.15+** is required, because the codec uses the `zstd` support that
+ships in `node:zlib`.
+
+## Build a character
+
+```js
+import * as jss from '@dnd-ed/jsshenanigans';
+import * as nodes from '@dnd-ed/jsshenanigans/nodes';
+import * as conditions from '@dnd-ed/jsshenanigans/conditions';
+
+const character = new jss.Character({ hide_character_extras: true });
+
+character.create.skill(
+  'Blitz',
+  [
+    nodes.SET_COOLDOWN({ key: -1, cooldown: 2 }),
+    nodes.HITBOX({ size: [6, 6, 4], damage: 5, preview: [0, 15] }),
+    nodes.WAIT({ TIME: 0.5 }),
+  ],
+  { cooldown: 5, tooltip: 'A short dash.' },
+);
+
+const code = character.export_character_code();
+```
+
+Every builder takes a single options object, and the output uses the key names
+the game itself uses (`HOLD FOR`, `360 BLOCK`, ...).
+
+## Load and inspect a code
+
+```js
+const character = jss.Character.from_code(code);
+
+console.log(character.length);      // how many entries
+console.log(character.skills);      // [{ kind, name }, ...]
+console.log(jss.describe(code));    // a structural summary
+console.log(jss.dumps(code));       // the whole payload, pretty printed
+```
+
+Fields jss does not model are kept exactly as they were, so a decode -> edit ->
+encode round trip does not lose anything.
+
+## zstd backends
+
+The codec picks a backend automatically:
+
+| Backend | Where | Compress | Decompress |
+| --- | --- | --- | --- |
+| `node:zlib` | Node 22.15+ | yes | yes |
+| `fzstd` | optional dependency | no | yes |
+
+In a browser neither exists, so register one:
+
+```js
+import * as jss from '@dnd-ed/jsshenanigans';
+
+jss.register_backend({
+  name: 'my-zstd',
+  compress: (bytes) => myZstd.compress(bytes),
+  decompress: (bytes) => myZstd.decompress(bytes),
+});
+```
+
+<Callout title="Why this exists">
+  This is the one thing the library could not do before this site was built. The
+  codec used to import `node:zlib` at the top of the file, so bundling it for the
+  browser failed outright. See [How this site was made](/docs/how-this-site-was-made).
+</Callout>
+
+## Errors
+
+Everything thrown derives from `JsshenanigansError`, so one `catch` covers the
+whole pipeline:
+
+```js
+try {
+  jss.Character.from_code(maybeCode);
+} catch (error) {
+  if (error instanceof jss.InvalidCharacterCodeError) {
+    // not a code
+  }
+}
+```

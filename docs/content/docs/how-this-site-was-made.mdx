@@ -1,0 +1,82 @@
+---
+title: How this site was made
+description: The stack, the one library change it forced, and how it deploys.
+---
+
+This site is two things: documentation written with
+[Fumadocs](https://fumadocs.dev), and an editor that runs jss in the browser.
+It is hosted on GitHub Pages, so it is a **static export** — no server at all.
+
+## Stack
+
+- **Next.js 16** with the App Router, `output: 'export'`.
+- **Fumadocs** (`fumadocs-core`, `fumadocs-ui`, `fumadocs-mdx`) for the docs,
+  including its static search index.
+- **Tailwind CSS 4**.
+- The library itself, installed with `file:..` so the site always tests the
+  checkout it lives in.
+
+## Scaffolding
+
+The app was generated with the official Fumadocs template, then trimmed:
+
+```bash
+npx create-fumadocs-app@latest docs \
+  --template "+next+fuma-docs-mdx+static" \
+  --pm npm --no-git --install
+```
+
+The `+static` template already produces an `output: 'export'` app with a static
+search route (`staticGET`), which is what makes GitHub Pages possible.
+
+## The library change this forced
+
+The first time the editor imported jss, the build failed. `src/codec.js` began
+with `import zlib from 'node:zlib'`, plus `node:module` and `Buffer`, so a
+browser bundle could not even load the module.
+
+The fix was to make the codec isomorphic:
+
+- It no longer imports Node built-ins at the top level. `node:zlib` is reached
+  through `process.getBuiltinModule('node:zlib')`, which simply fails in a
+  browser and is caught.
+- Base64 and UTF-8 use `Buffer` when it exists and `TextEncoder`/`btoa`
+  otherwise.
+- A new `register_backend()` lets an environment supply its own zstd.
+
+In the browser, the site supplies one built on WebAssembly and registers it
+before anything is decoded:
+
+```ts
+const zstd = await import('@bokuweb/zstd-wasm');
+await zstd.init(`${base}/zstd.wasm`);
+jss.register_backend({
+  name: 'zstd-wasm',
+  compress: (bytes) => zstd.compress(bytes),
+  decompress: (bytes) => zstd.decompress(bytes),
+});
+```
+
+The `.wasm` file is copied into `public/` at setup time, and `init()` is given a
+path that includes the Pages base path.
+
+## GitHub Pages details
+
+- The repo is served from `/<repo>/`, so `next.config.mjs` sets `basePath` and
+  `assetPrefix` from `NEXT_PUBLIC_BASE_PATH` (defaulting to `/jsshenanigans`).
+  Set it to an empty string for a custom domain.
+- `trailingSlash: true` and `images: { unoptimized: true }` keep the export
+  Pages-friendly.
+- A `public/.nojekyll` file stops Pages from ignoring the `_next` directory.
+- The deploy workflow installs, builds, and uploads `docs/out` with
+  `actions/upload-pages-artifact` and `actions/deploy-pages`.
+
+## Running it locally
+
+```bash
+cd docs
+npm install
+npm run dev      # http://localhost:3000/jsshenanigans
+```
+
+`npm run build` writes the static site to `docs/out`, and `npm start` serves it.

@@ -1,0 +1,56 @@
+---
+title: The moveset editor
+description: What the editor on this site does, and how it uses jss.
+---
+
+`/editor` is a small moveset editor that runs entirely in your browser. It is
+also the reason this site exists: a browser is the most awkward environment you
+can put this library in, so it is a good test.
+
+## What it does
+
+1. Paste a character code and press **Load**. The code is decoded with
+   `jss.Character.from_code`, so anything jss does not model survives.
+2. Edit the entries: rename a skill, change its kind and cooldown, add and
+   remove nodes from a dropdown of every `nodes.*` builder, tweak each node's
+   JSON, and add conditions from `conditions.*`.
+3. Press **Export code** to get a fresh code back.
+
+The bar at the top shows which zstd backend is live (`zstd-wasm` in a browser)
+and how many entries the payload holds.
+
+## How it uses jss
+
+The editor imports the real package, not a fork:
+
+```ts
+import * as jss from '@dnd-ed/jsshenanigans';
+import * as nodes from '@dnd-ed/jsshenanigans/nodes';
+import * as conditions from '@dnd-ed/jsshenanigans/conditions';
+```
+
+Adding a skill goes through the library:
+
+```ts
+const character = new jss.Character();
+character.create.skill('New Skill', { kind: 'SKILL' });
+const created = character.raw[0]; // already default-stripped
+```
+
+Adding a node calls the builder for the chosen name:
+
+```ts
+data.Line.push(nodes[name]({}));
+```
+
+Exporting encodes the current payload:
+
+```ts
+const code = jss.encode(payload);
+```
+
+<Callout type="warn" title="Not a full editor">
+  It is deliberately small: it edits the fields on each node as JSON rather than
+  drawing a control per property. The point is to exercise load, edit and export
+  in a browser, not to replace the in-game editor.
+</Callout>

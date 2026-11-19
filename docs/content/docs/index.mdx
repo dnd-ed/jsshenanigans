@@ -1,0 +1,43 @@
+---
+title: jsshenanigans
+description: Build, load and edit Jujutsu Shenanigans movesets from JavaScript.
+---
+
+**jsshenanigans** (short name `jss`) is a JavaScript library for creating, loading
+and modifying Jujutsu Shenanigans movesets. It is a port of
+[PythonShenanigans](https://github.com/dnd-ed/pythonshenanigans), which is itself
+inspired by [libjjs](https://github.com/FormunaGit/libjjs).
+
+A character code is just `base64(zstd(json))`, so nothing here depends on Roblox
+or the game itself.
+
+## Quick start
+
+```bash
+npm install @dnd-ed/jsshenanigans
+```
+
+```js
+import * as jss from '@dnd-ed/jsshenanigans';
+import * as nodes from '@dnd-ed/jsshenanigans/nodes';
+
+const character = new jss.Character();
+character.create.skill('Punch', [nodes.HITBOX({ damage: 5 })]);
+
+const code = character.export_character_code();
+```
+
+<Cards>
+  <Card title="Getting started" href="/docs/getting-started" />
+  <Card title="Nodes and conditions" href="/docs/nodes" />
+  <Card title="The moveset editor" href="/docs/editor" />
+  <Card title="How this site was made" href="/docs/how-this-site-was-made" />
+</Cards>
+
+## What it can do
+
+- Load an existing code and edit it, keeping every field it does not understand.
+- Model the `PARTICLE`, `LOOK` and `SETMELEE` nodes, plus the usual ones.
+- Set the `TOOL TIP` (skills) and `COLOR` (awakenings) fields.
+- Run in the browser, once a zstd backend is registered. See
+  [Getting started](/docs/getting-started).
