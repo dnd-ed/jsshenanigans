@@ -48,5 +48,11 @@
   "homepage": "https://github.com/dnd-ed/jsshenanigans",
   "bugs": {
     "url": "https://github.com/dnd-ed/jsshenanigans/issues"
-  }
+  },
+  "contributors": [
+    {
+      "name": "akinari (aki)",
+      "email": "pts@itzdanti.dev"
+    }
+  ]
 }
