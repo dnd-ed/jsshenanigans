@@ -1,6 +1,6 @@
 {
   "name": "jsshenanigans",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A JavaScript library for creating, loading and modifying Jujutsu Shenanigans movesets.",
   "keywords": [
     "jujutsu",
@@ -13,15 +13,62 @@
   "author": "akinari (aki) <pts@itzdanti.dev>",
   "type": "module",
   "main": "./src/index.js",
+  "types": "./src/index.d.ts",
   "exports": {
-    ".": "./src/index.js",
-    "./nodes": "./src/nodes.js",
-    "./conditions": "./src/conditions.js",
-    "./codec": "./src/codec.js",
-    "./types": "./src/types.js",
-    "./tools": "./src/tools.js",
-    "./defaults": "./src/defaults.js",
+    ".": {
+      "types": "./src/index.d.ts",
+      "default": "./src/index.js"
+    },
+    "./nodes": {
+      "types": "./src/nodes.d.ts",
+      "default": "./src/nodes.js"
+    },
+    "./conditions": {
+      "types": "./src/conditions.d.ts",
+      "default": "./src/conditions.js"
+    },
+    "./codec": {
+      "types": "./src/codec.d.ts",
+      "default": "./src/codec.js"
+    },
+    "./types": {
+      "types": "./src/types.d.ts",
+      "default": "./src/types.js"
+    },
+    "./tools": {
+      "types": "./src/tools.d.ts",
+      "default": "./src/tools.js"
+    },
+    "./defaults": {
+      "types": "./src/defaults.d.ts",
+      "default": "./src/defaults.js"
+    },
     "./package.json": "./package.json"
+  },
+  "typesVersions": {
+    "*": {
+      "nodes": [
+        "./src/nodes.d.ts"
+      ],
+      "conditions": [
+        "./src/conditions.d.ts"
+      ],
+      "codec": [
+        "./src/codec.d.ts"
+      ],
+      "types": [
+        "./src/types.d.ts"
+      ],
+      "tools": [
+        "./src/tools.d.ts"
+      ],
+      "defaults": [
+        "./src/defaults.d.ts"
+      ],
+      "*": [
+        "./src/index.d.ts"
+      ]
+    }
   },
   "files": [
     "src",
@@ -36,10 +83,16 @@
     "test": "node --test",
     "test:coverage": "node --test --experimental-test-coverage",
     "lint": "eslint .",
+    "typecheck": "tsc -p tsconfig.json",
+    "bench": "node scripts/bench-backends.js",
     "demo": "node demo/demo.js"
   },
   "devDependencies": {
-    "eslint": "^9.0.0"
+    "eslint": "^9.0.0",
+    "typescript": "^7.0.2"
+  },
+  "optionalDependencies": {
+    "fzstd": "^0.1.1"
   },
   "repository": {
     "type": "git",
