@@ -65,6 +65,8 @@ jobs:
     name: publish to npm
     needs: [lint, test]
     runs-on: ubuntu-latest
+    # Must match the "Environment name" on the npm trusted publisher config.
+    environment: npm
     permissions:
       contents: read
       id-token: write # required for trusted publishing (OIDC)
