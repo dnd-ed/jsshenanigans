@@ -8,7 +8,7 @@ import { fileURLToPath } from "node:url";
 
 import * as codec from "../src/codec.js";
 import * as nodes from "../src/nodes.js";
-import * as pts from "../src/index.js";
+import * as jss from "../src/index.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const fixture = (name) =>
@@ -19,13 +19,13 @@ const PARTICLE_CODE = fixture("game_code_particle_look_setmelee.txt");
 const ALL_FIELDS_CODE = fixture("game_code_all_fields.txt");
 
 test("describe summarises a character code", () => {
-  const info = pts.describe(SAMPLE_CODE);
+  const info = jss.describe(SAMPLE_CODE);
   assert.equal(info.skill_count, 5);
   assert.equal(info.skills[4].kind, "CHASE");
 });
 
 test("unmodelled fields survive a round trip", () => {
-  const payload = codec.decode(pts.Character.from_code(SAMPLE_CODE).export_character_code());
+  const payload = codec.decode(jss.Character.from_code(SAMPLE_CODE).export_character_code());
   assert.equal(payload[0]["TOOL TIP"], "tooltip here");
   assert.equal(payload[2].COLOR, "1,1,1 5,5,5");
   const kinds = JSON.parse(payload[0].DATA).Line.map((node) => node.K_NAME);
@@ -35,9 +35,9 @@ test("unmodelled fields survive a round trip", () => {
 });
 
 test("dumps expands the node graph", () => {
-  const character = new pts.Character();
+  const character = new jss.Character();
   character.create.skill("Expandable", [nodes.WAIT({ TIME: 0.5 })]);
-  const expanded = JSON.parse(pts.dumps(character.export_character_code()));
+  const expanded = JSON.parse(jss.dumps(character.export_character_code()));
   assert.equal(expanded[0].DATA.Line[0].K_NAME, "WAIT");
 });
 
@@ -50,12 +50,12 @@ test("nested DATA strings are expanded recursively", () => {
     Nested: { DATA: inner },
   });
   const payload = [{ NAME: "x", K_NAME: "SKILL", KEY: 1, DATA: middle }];
-  const expanded = JSON.parse(pts.dumps(codec.encode(payload)));
+  const expanded = JSON.parse(jss.dumps(codec.encode(payload)));
   assert.equal(typeof expanded[0].DATA.Nested.DATA, "object");
 });
 
 test("describe handles non-object entries", () => {
-  const info = pts.describe(codec.encode([1, 2]));
+  const info = jss.describe(codec.encode([1, 2]));
   assert.equal(info.skill_count, 2);
 });
 
@@ -73,7 +73,7 @@ test("parses a game code using particle, look and setmelee", () => {
     assert.ok(kinds.has(kind), `missing ${kind}`);
   }
 
-  const rebuilt = pts.Character.from_code(PARTICLE_CODE).export_character_code();
+  const rebuilt = jss.Character.from_code(PARTICLE_CODE).export_character_code();
   assert.deepEqual(codec.decode(rebuilt), payload);
 });
 

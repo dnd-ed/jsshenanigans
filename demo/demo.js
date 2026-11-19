@@ -4,13 +4,13 @@
  * Run with:  node demo/demo.js
  */
 
-import * as pts from "../src/index.js";
+import * as jss from "../src/index.js";
 import * as conditions from "../src/conditions.js";
 import * as nodes from "../src/nodes.js";
 
 // ------------------------------------------------------------------ building //
 
-const character = new pts.Character({ hide_character_extras: true });
+const character = new jss.Character({ hide_character_extras: true });
 
 // A faster Todo swap that only works while airborne.
 character.create.skill(
@@ -42,7 +42,7 @@ character.create.skill(
 
 const code = character.export_character_code();
 
-console.log("zstd backend:", pts.backend_name());
+console.log("zstd backend:", jss.backend_name());
 console.log("character code:");
 console.log(code);
 console.log();
@@ -50,10 +50,10 @@ console.log();
 // ------------------------------------------------------------------ loading //
 
 console.log("summary:");
-for (const entry of pts.describe(code).skills) {
+for (const entry of jss.describe(code).skills) {
   console.log("  ", entry.kind, "-", entry.name, "->", entry.nodes ?? []);
 }
 console.log();
 
 console.log("pretty payload (DATA expanded):");
-console.log(pts.dumps(code));
+console.log(jss.dumps(code));
